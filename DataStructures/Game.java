@@ -7,6 +7,7 @@ public class Game {
 
     public Game() {
         this.board = new Board();
+        initialize();
     }
 
     public void initialize() {
@@ -27,5 +28,9 @@ public class Game {
             System.err.println(e.getMessage());
             System.err.println("Ennek nem kéne megtörténnie...");
         }
+    }
+
+    public String toString() {
+        return this.board.toString();
     }
 }

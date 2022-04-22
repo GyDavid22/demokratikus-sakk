@@ -3,7 +3,7 @@ package DataStructures;
 import Exceptions.*;
 import java.util.ArrayList;
 
-public class Board {
+class Board {
     private Piece[][] field;
     private ArrayList<Piece> whites;
     private ArrayList<Piece> blacks;
@@ -55,5 +55,34 @@ public class Board {
 
     int getBoardSize() {
         return this.boardSize;
+    }
+
+    public String toString() {
+        String returnValue = "";
+        for (int i = 0; i < getBoardSize(); ++i) {
+            returnValue += "+---";
+        }
+        returnValue += "+\n";
+
+        for (int i = 0; i < getBoardSize(); ++i) {
+            for (int j = 0; j < getBoardSize(); ++j) {
+                returnValue += "|";
+                if (field[i][j] == null) {
+                    returnValue += "   ";
+                } else if (field[i][j].isBlack()) {
+                    returnValue += " X ";
+                } else {
+                    returnValue += " O ";
+                }
+            }
+            returnValue += "|\n";
+
+            for (int j = 0; j < getBoardSize(); ++j) {
+                returnValue += "+---";
+            }
+            returnValue += "+\n";
+        }
+
+        return returnValue;
     }
 }

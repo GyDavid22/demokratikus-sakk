@@ -1,6 +1,6 @@
 package DataStructures;
 
-public class Pawn extends Piece {
+class Pawn extends Piece {
     private Boolean isFirstStep;
 
     Pawn(Boolean isBlack, int[] pos, Board partOf) {

@@ -1,12 +1,12 @@
 package DataStructures;
 
-public abstract class Piece {
+abstract class Piece {
     private Boolean isBlack;
     private String type;
     private int[] pos;
     private Board partOf;
 
-    public Piece(Boolean isBlack, int[] pos, Board partOf, String type) {
+    Piece(Boolean isBlack, int[] pos, Board partOf, String type) {
         this.isBlack = isBlack;
         this.pos = pos;
         this.partOf = partOf;
@@ -16,7 +16,7 @@ public abstract class Piece {
     abstract void doStep();
 
     boolean isBlack() {
-        return this.isBlack();
+        return this.isBlack;
     }
 
     String getType() {
