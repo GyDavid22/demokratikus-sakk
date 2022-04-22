@@ -4,10 +4,12 @@ import Exceptions.OccupiedFieldException;
 
 public class Game {
     private Board board;
+    private Boolean blackSteps;
 
     public Game() {
         this.board = new Board();
         initialize();
+        this.blackSteps = false;
     }
 
     public void initialize() {

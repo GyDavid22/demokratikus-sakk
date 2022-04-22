@@ -2,6 +2,7 @@ package DataStructures;
 
 import Exceptions.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 class Board {
     private Piece[][] field;
@@ -57,6 +58,14 @@ class Board {
         return this.boardSize;
     }
 
+    Piece getRandomOne(boolean blackWanted) {
+        Random r = new Random();
+        if (blackWanted) {
+            return this.blacks.get(r.nextInt(0, this.blacks.size()));
+        }
+        return this.whites.get(r.nextInt(0, this.whites.size()));
+    }
+
     public String toString() {
         String returnValue = "";
         for (int i = 0; i < getBoardSize(); ++i) {
@@ -84,5 +93,12 @@ class Board {
         }
 
         return returnValue;
+    }
+
+    int numOfPieces(boolean blacksWanted) {
+        if (blacksWanted) {
+            return this.blacks.size();
+        }
+        return this.whites.size();
     }
 }

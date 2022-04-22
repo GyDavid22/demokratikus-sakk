@@ -4,12 +4,10 @@ abstract class Piece {
     private Boolean isBlack;
     private String type;
     private int[] pos;
-    private Board partOf;
 
-    Piece(Boolean isBlack, int[] pos, Board partOf, String type) {
+    Piece(Boolean isBlack, int[] pos, String type) {
         this.isBlack = isBlack;
         this.pos = pos;
-        this.partOf = partOf;
         this.type = type;
     }
 
@@ -27,14 +25,9 @@ abstract class Piece {
         return this.pos;
     }
 
-    boolean setPos(int[] pos) {
-        /**
-         * Visszatérési értéke megadja a művelet sikerességét.
-        */
-        if (partOf.isEmpty(pos)) {
-            this.pos = pos;
-            return true;
-        }
-        return false;
+    void setPos(int[] pos) {
+        this.pos = pos;
     }
+
+    abstract boolean canStep();
 }

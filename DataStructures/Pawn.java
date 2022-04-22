@@ -4,7 +4,7 @@ class Pawn extends Piece {
     private Boolean isFirstStep;
 
     Pawn(Boolean isBlack, int[] pos, Board partOf) {
-        super(isBlack, pos, partOf, "gyalog");
+        super(isBlack, pos, "gyalog");
         this.isFirstStep = true;
     }
 
@@ -14,5 +14,9 @@ class Pawn extends Piece {
         if (this.isFirstStep) {
             this.isFirstStep = false;
         }
+    }
+
+    boolean canStep() {
+        return true; // todo
     }
 }
