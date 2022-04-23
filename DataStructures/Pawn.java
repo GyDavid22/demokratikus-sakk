@@ -38,6 +38,10 @@ class Pawn extends Piece {
         Board partOf = getBoard();
         partOf.movePiece(this, possibleSteps.get(stepToDo));
 
+        if (this.isFirstStep) {
+            this.isFirstStep = false;
+        }
+
         return true;
     }
 

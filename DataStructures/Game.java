@@ -3,17 +3,19 @@ package DataStructures;
 import java.util.ArrayList;
 import java.util.Random;
 
+import Exceptions.EmptyFieldException;
 import Exceptions.OccupiedFieldException;
 
 public class Game {
     private Board board;
     private Boolean blackSteps;
-    private static int linesOfPawns = 2;
     private Boolean isGameOver;
     private String gameOverMessage;
+    private int linesOfPawns;
 
-    public Game() {
-        this.board = new Board();
+    public Game(int linesOfPawns, int boardSize) {
+        this.linesOfPawns = linesOfPawns;
+        this.board = new Board(boardSize);
         initialize();
         this.blackSteps = false;
         this.isGameOver = false;
@@ -22,13 +24,13 @@ public class Game {
 
     public void initialize() {
         try {
-            for (int i = 0; i < Game.linesOfPawns; ++i) {
+            for (int i = 0; i < this.linesOfPawns; ++i) {
                 for (int j = 0; j < board.getBoardSize(); ++j) {
                     int[] actpos = { i, j };
                     board.placePiece(new Pawn(true, actpos, board));
                 }
             }
-            for (int i = board.getBoardSize() - Game.linesOfPawns; i < board.getBoardSize(); ++i) {
+            for (int i = board.getBoardSize() - this.linesOfPawns; i < board.getBoardSize(); ++i) {
                 for (int j = 0; j < board.getBoardSize(); ++j) {
                     int[] actpos = { i, j };
                     board.placePiece(new Pawn(false, actpos, board));
@@ -44,21 +46,24 @@ public class Game {
             ArrayList<Piece> possiblePieces = this.board.getList(blackSteps);
             ArrayList<Piece> ableToHit = new ArrayList<>();
             Random r = new Random();
+            int chosenOne;
 
             for (Piece i : possiblePieces) {
                 i.possibleHits();
                 if (i.canHit()) {
                     ableToHit.add(i);
+                    i.nowCantHit();
                 }
             }
 
             try {
                 if (ableToHit.size() > 0) {
-                    ableToHit.get(r.nextInt(0, ableToHit.size())).doStep(); // akik itt vannak, azoknak van fix lépése, nem kell ellenőrizni
+                    chosenOne = r.nextInt(0, ableToHit.size());
+                    ableToHit.get(chosenOne).doStep(); // akik itt vannak, azoknak van fix lépése, nem kell ellenőrizni
                 } else {
                     Boolean stepSucceeded = false;
                     while (!stepSucceeded && possiblePieces.size() > 0) {
-                        int chosenOne = r.nextInt(0, possiblePieces.size());
+                        chosenOne = r.nextInt(0, possiblePieces.size());
                         stepSucceeded = possiblePieces.get(chosenOne).doStep();
                         if (!stepSucceeded) {
                             possiblePieces.remove(chosenOne);
@@ -69,10 +74,31 @@ public class Game {
                 e.printStackTrace();
             }
 
-            if (this.board.numOfPieces(true) == 0) {
+            Boolean whiteWon = false;
+            Boolean blackWon = false;
+            for (int i = 0; i < this.board.getBoardSize(); ++i) {
+                try {
+                    int[] testPos = { 0, i };
+                    if (!this.board.isPieceBlack(testPos)) {
+                        whiteWon = true;
+                        break;
+                    }
+                } catch (EmptyFieldException e) { }
+            }
+            for (int i = 0; i < this.board.getBoardSize(); ++i) {
+                try {
+                    int[] testPos = { this.board.getBoardSize() - 1, i };
+                    if (this.board.isPieceBlack(testPos)) {
+                        blackWon = true;
+                        break;
+                    }
+                } catch (EmptyFieldException e) { }
+            }
+
+            if (this.board.numOfPieces(true) == 0 || whiteWon) {
                 this.isGameOver = true;
                 this.gameOverMessage = "A fehér nyert.";
-            } else if (this.board.numOfPieces(false) == 0) {
+            } else if (this.board.numOfPieces(false) == 0 || blackWon) {
                 this.isGameOver = true;
                 this.gameOverMessage = "A fekete nyert.";
             } else if (possiblePieces.size() == 0) {

@@ -7,12 +7,13 @@ class Board {
     private Piece[][] field;
     private ArrayList<Piece> whites;
     private ArrayList<Piece> blacks;
-    private static int boardSize = 8;
+    private int boardSize;
 
-    Board() {
+    Board(int boardSize) {
         this.whites = new ArrayList<>();
         this.blacks = new ArrayList<>();
-        this.field = new Piece[getBoardSize()][getBoardSize()];
+        this.boardSize = boardSize;
+        this.field = new Piece[this.boardSize][this.boardSize];
     }
 
     void placePiece(Piece that) throws OccupiedFieldException {
@@ -37,6 +38,7 @@ class Board {
             if (that.isBlack() == isPieceBlack(destPos)) {
                 throw new CannotHitThatPiece();
             }
+            removePiece(that.getPos(), true);
             removePiece(destPos, false);
             field[destPos[0]][destPos[1]] = that;
             that.setPos(destPos);
@@ -72,7 +74,7 @@ class Board {
     }
 
     int getBoardSize() {
-        return Board.boardSize;
+        return this.boardSize;
     }
 
     public String toString() {
@@ -88,9 +90,9 @@ class Board {
                 if (field[i][j] == null) {
                     returnValue += "   ";
                 } else if (field[i][j].isBlack()) {
-                    returnValue += " X ";
+                    returnValue += " B ";
                 } else {
-                    returnValue += " O ";
+                    returnValue += " W ";
                 }
             }
             returnValue += "|\n";

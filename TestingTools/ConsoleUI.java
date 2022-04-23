@@ -4,11 +4,11 @@ import DataStructures.*;
 
 public class ConsoleUI {
     public static void startingPoint() {
-        Game game = new Game();
+        Game game = new Game(2, 8);
         System.out.println(game);
         while (!game.isGameOver()) {
             try {
-                Thread.sleep(000);
+                Thread.sleep(100);
             } catch (InterruptedException e) { }
             game.doRound();
             System.out.println(game);
