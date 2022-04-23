@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import Exceptions.EmptyFieldException;
+import Exceptions.NotEnoughPawnsException;
 import Exceptions.OccupiedFieldException;
 
 public class Game {
@@ -16,28 +17,38 @@ public class Game {
     public Game(int linesOfPawns, int boardSize) {
         this.linesOfPawns = linesOfPawns;
         this.board = new Board(boardSize);
-        initialize();
         this.blackSteps = false;
         this.isGameOver = false;
         this.gameOverMessage = new String();
+        try {
+            if (linesOfPawns <= 0) {
+                throw new NotEnoughPawnsException();
+            }
+            initialize();
+        } catch (OccupiedFieldException e) {
+            this.isGameOver = true;
+            this.gameOverMessage = "A megadott paraméterekkel nem kezdhető játék.";
+            System.err.println(gameOverMessage);
+            e.printStackTrace();
+        }
+        catch (NotEnoughPawnsException e) {
+            this.isGameOver = true;
+            e.printStackTrace();
+        }
     }
 
-    public void initialize() {
-        try {
-            for (int i = 0; i < this.linesOfPawns; ++i) {
-                for (int j = 0; j < board.getBoardSize(); ++j) {
-                    int[] actpos = { i, j };
-                    board.placePiece(new Pawn(true, actpos, board));
-                }
+    public void initialize() throws OccupiedFieldException {
+        for (int i = 0; i < this.linesOfPawns; ++i) {
+            for (int j = 0; j < board.getBoardSize(); ++j) {
+                int[] actpos = { i, j };
+                board.placePiece(new Pawn(true, actpos, board));
             }
-            for (int i = board.getBoardSize() - this.linesOfPawns; i < board.getBoardSize(); ++i) {
-                for (int j = 0; j < board.getBoardSize(); ++j) {
-                    int[] actpos = { i, j };
-                    board.placePiece(new Pawn(false, actpos, board));
-                }
+        }
+        for (int i = board.getBoardSize() - this.linesOfPawns; i < board.getBoardSize(); ++i) {
+            for (int j = 0; j < board.getBoardSize(); ++j) {
+                int[] actpos = { i, j };
+                board.placePiece(new Pawn(false, actpos, board));
             }
-        } catch (OccupiedFieldException e) {
-            e.printStackTrace();
         }
     }
 
