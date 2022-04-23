@@ -43,10 +43,9 @@ class Board {
             field[destPos[0]][destPos[1]] = that;
             that.setPos(destPos);
         }
-        that.nowCantHit();
     }
 
-    private Piece removePiece(int[] from, boolean onlyMoved) throws EmptyFieldException {
+    private void removePiece(int[] from, boolean onlyMoved) throws EmptyFieldException {
         if (isEmpty(from)) {
             throw new EmptyFieldException();
         }
@@ -59,7 +58,6 @@ class Board {
                 whites.remove(toRemove);
             }
         }
-        return toRemove;
     }
 
     boolean isEmpty(int[] pos) {

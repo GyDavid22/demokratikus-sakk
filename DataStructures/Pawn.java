@@ -47,7 +47,7 @@ class Pawn extends Piece {
 
     ArrayList<int[]> possibleSteps() {
         ArrayList<int[]> returnValues = possibleHits();
-        if (canHit()) {
+        if (returnValues.size() > 0) {
             return returnValues; // nem vizsgálunk tovább, ha ütni lehet, azt preferáljuk
         }
 
@@ -75,7 +75,7 @@ class Pawn extends Piece {
                         returnValues.add(possiblePos);
                     }
                 }
-            } catch (IndexOutOfBoundsException e) { }// kimentünk a tábláról, de ez nem jelent most semmit
+            } catch (IndexOutOfBoundsException e) { } // kimentünk a tábláról, de ez nem jelent most semmit
         }
 
         return returnValues;
@@ -111,9 +111,6 @@ class Pawn extends Piece {
             } catch (IndexOutOfBoundsException e) { // kimentünk a tábláról, de ez nem jelent most semmit
             } catch (EmptyFieldException e) { // üres blokk színét ellenőriztük, ebben az esetben ez sem fontos
             }
-        }
-        if (returnValues.size() > 0) {
-            nowAbleToHit();
         }
         return returnValues;
     }
