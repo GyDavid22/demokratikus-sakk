@@ -2,18 +2,17 @@ package DataStructures;
 
 import Exceptions.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 class Board {
     private Piece[][] field;
     private ArrayList<Piece> whites;
     private ArrayList<Piece> blacks;
-    private int boardSize = 8;
+    private static int boardSize = 8;
 
     Board() {
         this.whites = new ArrayList<>();
         this.blacks = new ArrayList<>();
-        this.field = new Piece[8][8];
+        this.field = new Piece[getBoardSize()][getBoardSize()];
     }
 
     void placePiece(Piece that) throws OccupiedFieldException {
@@ -29,16 +28,34 @@ class Board {
         }
     }
 
-    Piece removePiece(int[] from) throws EmptyFieldException {
+    void movePiece(Piece that, int[] destPos) throws EmptyFieldException, CannotHitThatPiece {
+        if (isEmpty(destPos)) {
+            removePiece(that.getPos(), true);
+            field[destPos[0]][destPos[1]] = that;
+            that.setPos(destPos);
+        } else {
+            if (that.isBlack() == isPieceBlack(destPos)) {
+                throw new CannotHitThatPiece();
+            }
+            removePiece(destPos, false);
+            field[destPos[0]][destPos[1]] = that;
+            that.setPos(destPos);
+        }
+        that.nowCantHit();
+    }
+
+    private Piece removePiece(int[] from, boolean onlyMoved) throws EmptyFieldException {
         if (isEmpty(from)) {
             throw new EmptyFieldException();
         }
         Piece toRemove = this.field[from[0]][from[1]];
         this.field[from[0]][from[1]] = null;
-        if (toRemove.isBlack()) {
-            blacks.remove(toRemove);
-        } else {
-            whites.remove(toRemove);
+        if (!onlyMoved) {
+            if (toRemove.isBlack()) {
+                blacks.remove(toRemove);
+            } else {
+                whites.remove(toRemove);
+            }
         }
         return toRemove;
     }
@@ -55,15 +72,7 @@ class Board {
     }
 
     int getBoardSize() {
-        return this.boardSize;
-    }
-
-    Piece getRandomOne(boolean blackWanted) {
-        Random r = new Random();
-        if (blackWanted) {
-            return this.blacks.get(r.nextInt(0, this.blacks.size()));
-        }
-        return this.whites.get(r.nextInt(0, this.whites.size()));
+        return Board.boardSize;
     }
 
     public String toString() {
@@ -100,5 +109,19 @@ class Board {
             return this.blacks.size();
         }
         return this.whites.size();
+    }
+
+    ArrayList<Piece> getList(boolean blackWanted) {
+        ArrayList<Piece> shallowCopy = new ArrayList<>();
+        if (blackWanted) {
+            for (Piece i : this.blacks) {
+                shallowCopy.add(i);
+            }
+        } else {
+            for (Piece i : this.whites) {
+                shallowCopy.add(i);
+            }
+        }
+        return shallowCopy;
     }
 }

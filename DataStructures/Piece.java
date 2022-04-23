@@ -1,17 +1,25 @@
 package DataStructures;
 
+import java.util.ArrayList;
+
+import Exceptions.*;
+
 abstract class Piece {
     private Boolean isBlack;
     private String type;
     private int[] pos;
+    private Board partOf;
+    private Boolean canHit;
 
-    Piece(Boolean isBlack, int[] pos, String type) {
+    Piece(Boolean isBlack, int[] pos, String type, Board partOf) {
         this.isBlack = isBlack;
         this.pos = pos;
         this.type = type;
+        this.partOf = partOf;
+        this.canHit = false;
     }
 
-    abstract void doStep();
+    abstract boolean doStep() throws EmptyFieldException, CannotHitThatPiece; // annak megfelelően tér vissza, hogy a lépés sikeres volt-e
 
     boolean isBlack() {
         return this.isBlack;
@@ -29,5 +37,22 @@ abstract class Piece {
         this.pos = pos;
     }
 
-    abstract boolean canStep();
+    Board getBoard() {
+        return this.partOf;
+    }
+
+    Boolean canHit() {
+        return this.canHit;
+    }
+
+    void nowAbleToHit() {
+        this.canHit = true;
+    }
+
+    void nowCantHit() {
+        this.canHit = false;
+    }
+
+    abstract ArrayList<int[]> possibleSteps();
+    abstract ArrayList<int[]> possibleHits();
 }
