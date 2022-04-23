@@ -17,7 +17,7 @@ abstract class Piece {
         this.partOf = partOf;
     }
 
-    abstract boolean doStep() throws EmptyFieldException, CannotHitThatPiece; // annak megfelelően tér vissza, hogy a lépés sikeres volt-e
+    abstract boolean doStep(Boolean aggressiveHit) throws EmptyFieldException, CannotHitThatPiece; // annak megfelelően tér vissza, hogy a lépés sikeres volt-e
 
     boolean isBlack() {
         return this.isBlack;
@@ -39,6 +39,6 @@ abstract class Piece {
         return this.partOf;
     }
 
-    abstract ArrayList<int[]> possibleSteps();
+    abstract ArrayList<int[]> possibleSteps(Boolean aggressiveHit);
     abstract ArrayList<int[]> possibleHits();
 }

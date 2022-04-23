@@ -69,12 +69,12 @@ public class Game {
         try {
             if (ableToHit.size() > 0) {
                 chosenOne = r.nextInt(0, ableToHit.size());
-                ableToHit.get(chosenOne).doStep(); // akik itt vannak, azoknak van fix lépése, nem kell ellenőrizni
+                ableToHit.get(chosenOne).doStep(true); // akik itt vannak, azoknak van fix lépése, nem kell ellenőrizni
             } else {
                 Boolean stepSucceeded = false;
                 while (!stepSucceeded && possiblePieces.size() > 0) {
                     chosenOne = r.nextInt(0, possiblePieces.size());
-                    stepSucceeded = possiblePieces.get(chosenOne).doStep();
+                    stepSucceeded = possiblePieces.get(chosenOne).doStep(true);
                     if (!stepSucceeded) {
                         possiblePieces.remove(chosenOne);
                     }

@@ -26,8 +26,8 @@ class Pawn extends Piece {
         }
     }
 
-    boolean doStep() throws EmptyFieldException, CannotHitThatPiece {
-        ArrayList<int[]> possibleSteps = possibleSteps();
+    boolean doStep(Boolean aggressiveHit) throws EmptyFieldException, CannotHitThatPiece {
+        ArrayList<int[]> possibleSteps = possibleSteps(true);
         if (possibleSteps.size() == 0) {
             return false;
         }
@@ -45,9 +45,9 @@ class Pawn extends Piece {
         return true;
     }
 
-    ArrayList<int[]> possibleSteps() {
+    ArrayList<int[]> possibleSteps(Boolean aggressiveHit) {
         ArrayList<int[]> returnValues = possibleHits();
-        if (returnValues.size() > 0) {
+        if (returnValues.size() > 0 && aggressiveHit) {
             return returnValues; // nem vizsgálunk tovább, ha ütni lehet, azt preferáljuk
         }
 
