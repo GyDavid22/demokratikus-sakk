@@ -76,32 +76,33 @@ class Board {
     }
 
     public String toString() {
-        String returnValue = "";
+        StringBuilder sb = new StringBuilder();
+
         for (int i = 0; i < getBoardSize(); ++i) {
-            returnValue += "+---";
+            sb.append("+---");
         }
-        returnValue += "+\n";
+        sb.append("+\n");
 
         for (int i = 0; i < getBoardSize(); ++i) {
             for (int j = 0; j < getBoardSize(); ++j) {
-                returnValue += "|";
+                sb.append("|");
                 if (field[i][j] == null) {
-                    returnValue += "   ";
+                    sb.append("   ");
                 } else if (field[i][j].isBlack()) {
-                    returnValue += " B ";
+                    sb.append(" B ");
                 } else {
-                    returnValue += " W ";
+                    sb.append(" W ");
                 }
             }
-            returnValue += "|\n";
+            sb.append("|\n");
 
             for (int j = 0; j < getBoardSize(); ++j) {
-                returnValue += "+---";
+                sb.append("+---");
             }
-            returnValue += "+\n";
+            sb.append("+\n");
         }
 
-        return returnValue;
+        return sb.toString();
     }
 
     int numOfPieces(boolean blacksWanted) {
