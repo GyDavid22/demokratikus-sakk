@@ -13,13 +13,15 @@ public class Game {
     private Boolean isGameOver;
     private String gameOverMessage;
     private int linesOfPawns;
+    private Boolean aggressiveHit;
 
-    public Game(int linesOfPawns, int boardSize) {
+    public Game(int linesOfPawns, int boardSize, Boolean aggressiveHit) {
         this.linesOfPawns = linesOfPawns;
         this.board = new Board(boardSize);
         this.blackSteps = false;
         this.isGameOver = false;
         this.gameOverMessage = new String();
+        this.aggressiveHit = aggressiveHit;
         try {
             if (linesOfPawns <= 0) {
                 throw new NotEnoughPawnsException();
@@ -69,12 +71,12 @@ public class Game {
         try {
             if (ableToHit.size() > 0) {
                 chosenOne = r.nextInt(0, ableToHit.size());
-                ableToHit.get(chosenOne).doStep(true); // akik itt vannak, azoknak van fix lépése, nem kell ellenőrizni
+                ableToHit.get(chosenOne).doStep(this.aggressiveHit); // akik itt vannak, azoknak van fix lépése, nem kell ellenőrizni
             } else {
                 Boolean stepSucceeded = false;
                 while (!stepSucceeded && possiblePieces.size() > 0) {
                     chosenOne = r.nextInt(0, possiblePieces.size());
-                    stepSucceeded = possiblePieces.get(chosenOne).doStep(true);
+                    stepSucceeded = possiblePieces.get(chosenOne).doStep(this.aggressiveHit);
                     if (!stepSucceeded) {
                         possiblePieces.remove(chosenOne);
                     }
