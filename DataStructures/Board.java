@@ -1,9 +1,14 @@
 package DataStructures;
 
 import Exceptions.*;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-class Board {
+class Board implements Serializable {
     private Piece[][] field;
     private ArrayList<Piece> whites;
     private ArrayList<Piece> blacks;
@@ -15,6 +20,8 @@ class Board {
         this.boardSize = boardSize;
         this.field = new Piece[this.boardSize][this.boardSize];
     }
+
+    private Board() { }
 
     void placePiece(Piece that) throws OccupiedFieldException {
         int[] to = that.getPos();
@@ -124,5 +131,20 @@ class Board {
             }
         }
         return shallowCopy;
+    }
+    void save(ObjectOutputStream oos) throws IOException {
+        oos.writeObject(this.field);
+        oos.writeObject(this.whites);
+        oos.writeObject(this.blacks);
+        oos.writeObject(this.boardSize);
+    }
+
+    static Board load(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        Board loadedObject = new Board();
+        loadedObject.field = (Piece[][]) ois.readObject();
+        loadedObject.whites = (ArrayList<Piece>) ois.readObject();
+        loadedObject.blacks = (ArrayList<Piece>) ois.readObject();
+        loadedObject.boardSize = (int) ois.readObject();
+        return loadedObject;
     }
 }

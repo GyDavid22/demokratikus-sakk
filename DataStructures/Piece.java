@@ -1,10 +1,13 @@
 package DataStructures;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import Exceptions.*;
 
-abstract class Piece {
+abstract class Piece implements Serializable {
     private Boolean isBlack;
     private String type;
     private int[] pos;
@@ -38,6 +41,14 @@ abstract class Piece {
     Board getBoard() {
         return this.partOf;
     }
+
+    void save(ObjectOutputStream oos) throws IOException {
+        oos.writeObject(this.isBlack);
+        oos.writeObject(this.pos);
+        oos.writeObject(this.partOf);
+    }
+
+    //abstract Piece load(ObjectInputStream ois) throws IOException, ClassNotFoundException;
 
     abstract ArrayList<int[]> possibleSteps(Boolean aggressiveHit);
     abstract ArrayList<int[]> possibleHits();

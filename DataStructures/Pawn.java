@@ -3,6 +3,9 @@ package DataStructures;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import Exceptions.CannotHitThatPiece;
 import Exceptions.EmptyFieldException;
@@ -113,5 +116,22 @@ class Pawn extends Piece {
             }
         }
         return returnValues;
+    }
+
+    void save(ObjectOutputStream oos) throws IOException {
+        super.save(oos);
+        oos.writeObject(this.isFirstStep);
+    }
+
+    static Pawn load(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        boolean isBlack = (boolean) ois.readObject();
+        int[] pos = (int[]) ois.readObject();
+        Board partOf = (Board) ois.readObject();
+
+        Pawn loadedObject = new Pawn(isBlack, pos, partOf);
+
+        loadedObject.isFirstStep = (boolean) ois.readObject();
+
+        return loadedObject;
     }
 }

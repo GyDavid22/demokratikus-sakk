@@ -1,7 +1,12 @@
 package DataStructures;
 
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
+import java.io.File;
+import java.io.FileInputStream;
 
 import Exceptions.EmptyFieldException;
 import Exceptions.NotEnoughPawnsException;
@@ -14,6 +19,7 @@ public class Game {
     private String gameOverMessage;
     private int linesOfPawns;
     private Boolean aggressiveHit;
+    private int boardSize;
 
     public Game(int linesOfPawns, int boardSize, Boolean aggressiveHit) {
         this.linesOfPawns = linesOfPawns;
@@ -36,6 +42,7 @@ public class Game {
             this.isGameOver = true;
             e.printStackTrace();
         }
+        this.boardSize = boardSize;
     }
 
     public void initialize() throws OccupiedFieldException {
@@ -71,7 +78,8 @@ public class Game {
         try {
             if (ableToHit.size() > 0) {
                 chosenOne = r.nextInt(0, ableToHit.size());
-                ableToHit.get(chosenOne).doStep(this.aggressiveHit); // akik itt vannak, azoknak van fix lépése, nem kell ellenőrizni
+                ableToHit.get(chosenOne).doStep(this.aggressiveHit); // akik itt vannak, azoknak van fix lépése, nem
+                                                                     // kell ellenőrizni
             } else {
                 Boolean stepSucceeded = false;
                 while (!stepSucceeded && possiblePieces.size() > 0) {
@@ -131,5 +139,59 @@ public class Game {
 
     public boolean isGameOver() {
         return this.isGameOver;
+    }
+
+    public void save() {
+        try {
+            File saveFile = new File("savefile.bin");
+            if (!saveFile.exists()) {
+                saveFile.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(saveFile);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            this.board.save(oos);
+            oos.writeObject(this.blackSteps);
+            oos.writeObject(this.isGameOver);
+            oos.writeObject(this.gameOverMessage);
+            oos.writeObject(this.linesOfPawns);
+            oos.writeObject(this.aggressiveHit);
+            oos.writeObject(this.boardSize);
+
+            oos.close();
+        } catch (Exception e) {
+            System.err.println("A fájlbamentés meghiúsult.");
+            e.printStackTrace();
+        }
+    }
+
+    public static Game load() {
+        Game loadedGame = null;
+        try {
+            FileInputStream fis = new FileInputStream("savefile.bin");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            Board loaded = Board.load(ois);
+            Boolean blackSteps = (Boolean) ois.readObject();
+            Boolean isGameOver = (Boolean) ois.readObject();
+            String gameOverMessage = (String) ois.readObject();
+            int linesOfPawns = (int) ois.readObject();
+            Boolean aggressiveHit = (Boolean) ois.readObject();
+            int boardSize = (int) ois.readObject();
+
+            loadedGame = new Game(linesOfPawns, boardSize, aggressiveHit);
+
+            loadedGame.board = loaded;
+            loadedGame.blackSteps = blackSteps;
+            loadedGame.isGameOver = isGameOver;
+            loadedGame.gameOverMessage = gameOverMessage;
+
+            ois.close();
+        } catch (Exception e) {
+            System.err.println("A fájlból betöltés meghiúsult.");
+            e.printStackTrace();
+        }
+        
+        return loadedGame;
     }
 }
