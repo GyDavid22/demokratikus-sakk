@@ -18,7 +18,15 @@ public class SettingsTab {
         return this.settings;
     }
 
-    void eventLoop() {
-        this.sliders.eventLoop();
+    void eventLoop(GUI toSet) {
+        this.sliders.eventLoop(toSet);
+    }
+
+    int getBoardSize() {
+        return this.sliders.getBoardSize();
+    }
+
+    int getRowOfPawns() {
+        return this.sliders.getRowOfPawns();
     }
 }

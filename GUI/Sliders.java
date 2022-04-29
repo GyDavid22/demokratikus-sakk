@@ -3,6 +3,8 @@ package GUI;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import DataStructures.Game;
+
 public class Sliders {
     private JPanel sliders;
 
@@ -50,7 +52,16 @@ public class Sliders {
         return this.sliders;
     }
 
-    void eventLoop() {
+    int getBoardSize() {
+        return this.boardSize;
+    }
+
+    int getRowOfPawns() {
+        return this.pawns;
+    }
+
+    void eventLoop(GUI toSet) {
+        Boolean changeHappened = false;
         if (this.boardSetter.getValue() != this.boardSize) {
             this.boardSize = this.boardSetter.getValue();
             this.pawnSetter.setMaximum(this.boardSize / 2);
@@ -58,10 +69,15 @@ public class Sliders {
                 this.pawnSetter.setValue(this.pawnSetter.getMaximum());
             }
             this.boardcount.setText(Integer.toString(this.boardSize));
+            changeHappened = true;
         }
         if (this.pawnSetter.getValue() != this.pawns) {
             this.pawns = this.pawnSetter.getValue();
             this.pawncount.setText(Integer.toString(this.pawns));
+            changeHappened = true;
+        }
+        if (changeHappened) {
+            toSet.thisGame = new Game(this.pawns, this.boardSize, true);
         }
     }
 }

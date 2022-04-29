@@ -2,6 +2,8 @@ package GUI;
 
 import javax.swing.*;
 
+import DataStructures.Game;
+
 public class GameTab {
     private JPanel game;
     private GameButtons gButtons;
@@ -22,7 +24,8 @@ public class GameTab {
         return this.game;
     }
 
-    void eventLoop() {
+    void eventLoop(Game toDraw) {
+        this.field.refresh(toDraw);
         this.gButtons.eventLoop();
     }
 }

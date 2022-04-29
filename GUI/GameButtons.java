@@ -21,7 +21,7 @@ public class GameButtons {
         JPanel otherButtonPanel = new JPanel();
         otherButtonPanel.setLayout(new BoxLayout(otherButtonPanel, BoxLayout.LINE_AXIS));
         this.other = new JButton("másik");
-        startButtonPanel.add(this.other);
+        otherButtonPanel.add(this.other);
         otherButtonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         this.buttons.add(startButtonPanel);

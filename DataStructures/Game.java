@@ -21,6 +21,10 @@ public class Game {
     private Boolean aggressiveHit;
     private int boardSize;
 
+    public enum BoardValue {
+        NONE, WHITE, BLACK
+    }
+
     public Game(int linesOfPawns, int boardSize, Boolean aggressiveHit) {
         this.linesOfPawns = linesOfPawns;
         this.board = new Board(boardSize);
@@ -128,6 +132,26 @@ public class Game {
             this.gameOverMessage = "Patthelyzet.";
         }
         this.blackSteps = !this.blackSteps;
+    }
+
+    public int getBoardSize() {
+        return this.boardSize;
+    }
+
+    public BoardValue askBoard(int x, int y) {
+        int[] posArray = { x, y };
+        if (this.board.isEmpty(posArray)) {
+            return BoardValue.NONE;
+        }
+        try {
+            if (this.board.isPieceBlack(posArray)) {
+                return BoardValue.BLACK;
+            }
+        } catch (EmptyFieldException e) {
+            System.err.println("Ennek nem kéne megtörténnie.");
+            e.printStackTrace();
+        }
+        return BoardValue.WHITE;
     }
 
     public String toString() {

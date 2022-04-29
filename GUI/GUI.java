@@ -2,46 +2,55 @@ package GUI;
 
 import javax.swing.*;
 
+import DataStructures.Game;
+
 public class GUI {
+    private JFrame window;
+    private JPanel whole;
+    private JTabbedPane tabs;
+    private GameTab game;
+    private SettingsTab settings;
+    private About about;
+    Game thisGame;
+
     static int minBoardSize = 4;
     static int maxBoardSize = 20;
 
-    public static void gui() {
-        JFrame window = new JFrame("Demokratikus sakk");
-        window.setResizable(false);
-        window.setSize(600, 600);
-        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        window.setVisible(true);
+    public GUI() {
+        this.window = new JFrame("Demokratikus sakk");
+        this.window.setResizable(false);
+        this.window.setSize(600, 600);
+        this.window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        JPanel whole = new JPanel();
-        whole.setLayout(new BoxLayout(whole, BoxLayout.Y_AXIS));
+        this.whole = new JPanel();
+        this.whole.setLayout(new BoxLayout(this.whole, BoxLayout.Y_AXIS));
 
-        JTabbedPane tabs = new JTabbedPane();
-        whole.add(tabs);
+        this.tabs = new JTabbedPane();
+        this.whole.add(this.tabs);
 
-        GameTab game = new GameTab();
-        tabs.addTab("Játékmező", game.getPanel());
+        this.game = new GameTab();
+        this.tabs.addTab("Játékmező", this.game.getPanel());
 
-        SettingsTab settings = new SettingsTab();
-        tabs.addTab("Beállítások", settings.getPanel());
+        this.settings = new SettingsTab();
+        this.tabs.addTab("Beállítások", this.settings.getPanel());
 
-        About about = new About();
-        tabs.addTab("Névjegy", about.getPanel());
+        this.about = new About();
+        this.tabs.addTab("Névjegy", this.about.getPanel());
 
-        window.add(whole);
+        this.window.add(this.whole);
 
+        this.thisGame = new Game(2, 8, true);
+    }
+
+    public void start() {
+        this.window.setVisible(true);
         Boolean run = true;
         while (run) {
             if (!window.isVisible()) {
                 run = false;
             }
-            game.eventLoop();
-            settings.eventLoop();
-            try {
-                Thread.sleep(20); // 50 Hz
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            game.eventLoop(this.thisGame);
+            settings.eventLoop(this);
         }
     }
 }
