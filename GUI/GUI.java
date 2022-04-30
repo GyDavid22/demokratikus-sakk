@@ -45,14 +45,23 @@ public class GUI {
     public void start() {
         this.window.setVisible(true);
         Boolean run = true;
+        Boolean changed = false;
         game.eventLoop(this.thisGame);
         while (run) {
             if (!window.isVisible()) {
                 run = false;
             }
+            if (!thisGame.isGameOver()) {
+                thisGame.doRound();
+                changed = true;
+            }
             if (settings.eventLoop(this)) {
+                changed = true;
+            }
+            if (this.game.getPanel().isShowing() && changed) {
                 game.eventLoop(this.thisGame);
                 this.game.getPanel().revalidate();
+                changed = false;
             }
             try {
                 Thread.sleep(20);

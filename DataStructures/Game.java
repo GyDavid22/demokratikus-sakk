@@ -165,6 +165,10 @@ public class Game {
         return this.isGameOver;
     }
 
+    public String getGameOverMessage() {
+        return this.gameOverMessage;
+    }
+
     public void save() {
         try {
             File saveFile = new File("savefile.bin");

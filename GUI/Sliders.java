@@ -16,6 +16,10 @@ public class Sliders {
     private int pawns;
     private JLabel pawncount;
 
+    private JSlider speed;
+    private int speedMs;
+    private JLabel speedLabel;
+
     Sliders() {
         this.sliders = new JPanel();
         this.sliders.setLayout(new BoxLayout(sliders, BoxLayout.Y_AXIS));
@@ -46,6 +50,19 @@ public class Sliders {
         pawnTexts.add(this.pawncount);
         this.sliders.add(pawnTexts);
         this.sliders.add(pawnSetter);
+
+        this.speed = new JSlider(20, 1000);
+        this.speed.setName("A szimuláció sebessége (ms)");
+        this.speed.setValue(1000);
+        this.speedMs = this.speed.getValue();
+        this.speed.setBorder(new EmptyBorder(5, 5, 5, 5));
+        JPanel speedTexts = new JPanel();
+        speedTexts.setLayout(new BoxLayout(speedTexts, BoxLayout.X_AXIS));
+        speedTexts.add(new JLabel("A szimuláció sebessége (ms): "));
+        this.speedLabel = new JLabel(Integer.toString(this.speedMs));
+        speedTexts.add(this.speedLabel);
+        this.sliders.add(speedTexts);
+        this.sliders.add(this.speed);
     }
 
     JPanel getPanel() {
@@ -75,6 +92,10 @@ public class Sliders {
             this.pawns = this.pawnSetter.getValue();
             this.pawncount.setText(Integer.toString(this.pawns));
             changeHappened = true;
+        }
+        if (this.speed.getValue() != this.speedMs) {
+            this.speedMs = this.speed.getValue();
+            this.speedLabel.setText(Integer.toString(this.speedMs));
         }
         if (changeHappened) {
             toSet.thisGame = new Game(this.pawns, this.boardSize, true);
