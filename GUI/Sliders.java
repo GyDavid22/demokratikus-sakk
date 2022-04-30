@@ -60,7 +60,7 @@ public class Sliders {
         return this.pawns;
     }
 
-    void eventLoop(GUI toSet) {
+    Boolean eventLoop(GUI toSet) {
         Boolean changeHappened = false;
         if (this.boardSetter.getValue() != this.boardSize) {
             this.boardSize = this.boardSetter.getValue();
@@ -79,5 +79,6 @@ public class Sliders {
         if (changeHappened) {
             toSet.thisGame = new Game(this.pawns, this.boardSize, true);
         }
+        return changeHappened;
     }
 }

@@ -45,12 +45,18 @@ public class GUI {
     public void start() {
         this.window.setVisible(true);
         Boolean run = true;
+        game.eventLoop(this.thisGame);
         while (run) {
             if (!window.isVisible()) {
                 run = false;
             }
-            game.eventLoop(this.thisGame);
-            settings.eventLoop(this);
+            if (settings.eventLoop(this)) {
+                game.eventLoop(this.thisGame);
+                this.game.getPanel().revalidate();
+            }
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) { }
         }
     }
 }

@@ -18,8 +18,8 @@ public class SettingsTab {
         return this.settings;
     }
 
-    void eventLoop(GUI toSet) {
-        this.sliders.eventLoop(toSet);
+    Boolean eventLoop(GUI toSet) {
+        return this.sliders.eventLoop(toSet);
     }
 
     int getBoardSize() {
