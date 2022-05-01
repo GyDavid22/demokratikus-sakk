@@ -5,6 +5,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
+import java.util.TreeMap;
 
 import DataStructures.Game;
 
@@ -36,10 +37,12 @@ public class GUI implements ActionListener, WindowListener {
 
     // Játékmező
     private JPanel allOfTheField;
-    private ImageIcon black, white, blackonwhite, blackonblack, whiteonwhite, whiteonblack;
     private JLabel gameMessage;
     private JPanel messagePanel;
     private JPanel field;
+    private static TreeMap<Game.BoardValue, ImageIcon> originalWhites = new TreeMap<>();
+    private static TreeMap<Game.BoardValue, ImageIcon> originalBlacks = new TreeMap<>();
+    private TreeMap<Game.BoardValue, ImageIcon> miniWhites, miniBlacks;
 
     // Játékvezérlő gombok
     private JPanel buttons;
@@ -57,6 +60,20 @@ public class GUI implements ActionListener, WindowListener {
 
     public GUI() {
         this.separator = System.getProperty("file.separator");
+
+        if (GUI.originalBlacks.size() == 0) {
+            originalBlacks.put(Game.BoardValue.NONE, new ImageIcon("files" + this.separator + "black.jpg"));
+            originalBlacks.put(Game.BoardValue.WHITE, new ImageIcon("files" + this.separator + "whiteonblack.jpg"));
+            originalBlacks.put(Game.BoardValue.BLACK, new ImageIcon("files" + this.separator + "blackonblack.jpg"));
+        }
+        if (GUI.originalWhites.size() == 0) {
+            originalWhites.put(Game.BoardValue.NONE, new ImageIcon("files" + this.separator + "white.jpg"));
+            originalWhites.put(Game.BoardValue.BLACK, new ImageIcon("files" + this.separator + "blackonwhite.jpg"));
+            originalWhites.put(Game.BoardValue.WHITE, new ImageIcon("files" + this.separator + "whiteonwhite.jpg"));
+        }
+
+        this.miniBlacks = new TreeMap<>();
+        this.miniWhites = new TreeMap<>();
 
         this.defaultBoardSize = 8;
         this.defaultPawns = 2;
@@ -86,7 +103,7 @@ public class GUI implements ActionListener, WindowListener {
         initAboutTab();
         this.tabs.addTab("Névjegy", this.aboutTab);
 
-        this.thisGame = new Game(this.defaultPawns, this.defaultBoardSize, true);
+        newGameInstance();
 
         this.window.add(this.whole);
     }
@@ -124,7 +141,7 @@ public class GUI implements ActionListener, WindowListener {
                 this.paused = true;
             }
             if (this.doReset) {
-                this.thisGame = new Game(this.pawns, this.boardSize, true);
+                newGameInstance();
                 this.gameInProgress = false;
                 this.paused = true;
                 this.doReset = false;
@@ -200,7 +217,7 @@ public class GUI implements ActionListener, WindowListener {
             this.speedLabel.setText(Integer.toString(this.speedMs));
         }
         if (changeHappened) {
-            this.thisGame = new Game(this.pawns, this.boardSize, true);
+            newGameInstance();
         }
         return changeHappened;
     }
@@ -219,12 +236,7 @@ public class GUI implements ActionListener, WindowListener {
     private void initGameField() {
         this.allOfTheField = new JPanel();
         this.allOfTheField.setLayout(new BoxLayout(this.allOfTheField, BoxLayout.Y_AXIS));
-        this.black = new ImageIcon("files" + this.separator + "black.jpg");
-        this.white = new ImageIcon("files" + this.separator + "white.jpg");
-        this.blackonwhite = new ImageIcon("files" + this.separator + "blackonwhite.jpg");
-        this.blackonblack = new ImageIcon("files" + this.separator + "blackonblack.jpg");
-        this.whiteonwhite = new ImageIcon("files" + this.separator + "whiteonwhite.jpg");
-        this.whiteonblack = new ImageIcon("files" + this.separator + "whiteonblack.jpg");
+
         this.gameMessage = new JLabel("");
         this.messagePanel = new JPanel();
         this.messagePanel.setLayout(new BoxLayout(this.messagePanel, BoxLayout.X_AXIS));
@@ -239,19 +251,6 @@ public class GUI implements ActionListener, WindowListener {
     }
 
     private void refreshGameField() {
-        ImageIcon miniBlack = new ImageIcon(
-                this.black.getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_FAST));
-        ImageIcon miniWhite = new ImageIcon(
-                this.white.getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_FAST));
-        ImageIcon miniblackonwhite = new ImageIcon(this.blackonwhite.getImage().getScaledInstance(400 / this.boardSize,
-                400 / this.boardSize, Image.SCALE_FAST));
-        ImageIcon miniblackonblack = new ImageIcon(this.blackonblack.getImage().getScaledInstance(400 / this.boardSize,
-                400 / this.boardSize, Image.SCALE_FAST));
-        ImageIcon miniwhiteonwhite = new ImageIcon(this.whiteonwhite.getImage().getScaledInstance(400 / this.boardSize,
-                400 / this.boardSize, Image.SCALE_FAST));
-        ImageIcon miniwhiteonblack = new ImageIcon(this.whiteonblack.getImage().getScaledInstance(400 / this.boardSize,
-                400 / this.boardSize, Image.SCALE_FAST));
-
         JPanel currentState = new JPanel();
         currentState.setLayout(new BoxLayout(currentState, BoxLayout.Y_AXIS));
         this.field.removeAll();
@@ -265,22 +264,10 @@ public class GUI implements ActionListener, WindowListener {
                 ImageIcon currentField = null;
                 if (i % 2 == j % 2) {
                     Game.BoardValue current = this.thisGame.askBoard(i, j);
-                    if (current == Game.BoardValue.NONE) {
-                        currentField = miniWhite;
-                    } else if (current == Game.BoardValue.WHITE) {
-                        currentField = miniwhiteonwhite;
-                    } else {
-                        currentField = miniblackonwhite;
-                    }
+                    currentField = this.miniWhites.get(current);
                 } else {
                     Game.BoardValue current = this.thisGame.askBoard(i, j);
-                    if (current == Game.BoardValue.NONE) {
-                        currentField = miniBlack;
-                    } else if (current == Game.BoardValue.WHITE) {
-                        currentField = miniwhiteonblack;
-                    } else {
-                        currentField = miniblackonblack;
-                    }
+                    currentField = this.miniBlacks.get(current);
                 }
                 JLabel current = new JLabel(currentField);
                 rows.add(current);
@@ -373,6 +360,20 @@ public class GUI implements ActionListener, WindowListener {
         dialog.setVisible(false);
     }
 
+    private void newGameInstance() {
+        this.miniBlacks.clear();
+        this.miniBlacks.put(Game.BoardValue.NONE, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.NONE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniBlacks.put(Game.BoardValue.BLACK, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.BLACK).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniBlacks.put(Game.BoardValue.WHITE, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.WHITE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+
+        this.miniWhites.clear();
+        this.miniWhites.put(Game.BoardValue.NONE, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.NONE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniWhites.put(Game.BoardValue.BLACK, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.BLACK).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniWhites.put(Game.BoardValue.WHITE, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.WHITE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+
+        this.thisGame = new Game(this.pawns, this.boardSize, true);
+    }
+    
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.startButton) {
