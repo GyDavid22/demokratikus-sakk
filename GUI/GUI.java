@@ -43,7 +43,7 @@ public class GUI implements ActionListener {
     private JPanel buttons;
     private JButton startButton;
     private JButton reset;
-    private Boolean startButtonState;
+    private Boolean gameInProgress;
     private Boolean paused;
     private Boolean doReset;
 
@@ -85,15 +85,19 @@ public class GUI implements ActionListener {
     public void start() {
         this.window.setVisible(true);
         Boolean run = true;
-        Boolean changed = false;
+        Boolean changed = true;
         gameTabEventLoop();
         while (run) {
             if (!window.isVisible()) {
                 run = false;
             }
-            if (!thisGame.isGameOver() && this.startButtonState && !this.paused) {
+            if (!thisGame.isGameOver() && this.gameInProgress && !this.paused) {
                 thisGame.doRound();
                 changed = true;
+            }
+            if (thisGame.isGameOver()) {
+                this.gameInProgress = false;
+                this.paused = true;
             }
             if (settingsTabLoop()) {
                 changed = true;
@@ -107,11 +111,14 @@ public class GUI implements ActionListener {
                 this.paused = true;
             }
             if (this.doReset) {
-
+                this.thisGame = new Game(this.pawns, this.boardSize, true);
+                this.gameInProgress = false;
+                this.paused = true;
                 this.doReset = false;
+                changed = true;
             }
             try {
-                Thread.sleep(20);
+                Thread.sleep(this.speedMs);
             } catch (InterruptedException e) {
             }
         }
@@ -130,10 +137,10 @@ public class GUI implements ActionListener {
         JPanel boardTexts = new JPanel();
         boardTexts.setLayout(new BoxLayout(boardTexts, BoxLayout.X_AXIS));
         boardTexts.add(new JLabel("Tábla mérete: "));
-        this.boardcount = new JLabel(Integer.toString(boardSize));
-        boardTexts.add(boardcount);
+        this.boardcount = new JLabel(Integer.toString(this.boardSize));
+        boardTexts.add(this.boardcount);
         this.sliders.add(boardTexts);
-        this.sliders.add(boardSetter);
+        this.sliders.add(this.boardSetter);
 
         this.pawnSetter = new JSlider(1, 4);
         this.pawnSetter.setName("A gyalogok sorainak száma");
@@ -150,7 +157,7 @@ public class GUI implements ActionListener {
 
         this.speed = new JSlider(20, 1000);
         this.speed.setName("A szimuláció sebessége (ms)");
-        this.speed.setValue(1000);
+        this.speed.setValue(20);
         this.speedMs = this.speed.getValue();
         this.speed.setBorder(new EmptyBorder(5, 5, 5, 5));
         JPanel speedTexts = new JPanel();
@@ -288,17 +295,20 @@ public class GUI implements ActionListener {
         JPanel resetButtonPanel = new JPanel();
         resetButtonPanel.setLayout(new BoxLayout(resetButtonPanel, BoxLayout.LINE_AXIS));
         this.reset = new JButton("Reset");
+        this.reset.addActionListener(this);
         resetButtonPanel.add(this.reset);
         resetButtonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         this.buttons.add(startButtonPanel);
         this.buttons.add(resetButtonPanel);
 
-        this.startButtonState = this.paused = this.doReset = false;
+        this.gameInProgress = false;
+        this.paused = true;
+        this.doReset = false;
     }
 
     private void gameButtonsEventLoop() {
-        if (!this.paused && this.startButtonState) {
+        if (!this.paused && this.gameInProgress) {
             this.startButton.setText("Szünet");
         } else {
             this.startButton.setText("Start");
@@ -336,15 +346,17 @@ public class GUI implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.startButton) {
-            if (this.startButtonState) {
+            if (this.gameInProgress) {
                 this.paused = !this.paused;
             } else {
-                this.startButtonState = true;
+                this.gameInProgress = true;
+                this.paused = false;
             }
         }
         if (e.getSource() == this.reset) {
-            startButtonState = paused = false;
-            doReset = true;
+            this.gameInProgress = false;
+            this.paused = true;
+            this.doReset = true;
         }
     }
 }
