@@ -169,9 +169,9 @@ public class Game {
         return this.gameOverMessage;
     }
 
-    public void save() {
+    public void save(String path) {
         try {
-            File saveFile = new File("savefile.bin");
+            File saveFile = new File(path);
             if (!saveFile.exists()) {
                 saveFile.createNewFile();
             }
@@ -193,10 +193,10 @@ public class Game {
         }
     }
 
-    public static Game load() {
+    public static Game load(String path) {
         Game loadedGame = null;
         try {
-            FileInputStream fis = new FileInputStream("savefile.bin");
+            FileInputStream fis = new FileInputStream(path);
             ObjectInputStream ois = new ObjectInputStream(fis);
 
             Board loaded = Board.load(ois);
@@ -218,6 +218,11 @@ public class Game {
         } catch (Exception e) {
             System.err.println("A fájlból betöltés meghiúsult.");
             e.printStackTrace();
+        } finally {
+            File saveFile = new File(path);
+            if (saveFile.exists()) {
+                saveFile.delete();
+            }
         }
         
         return loadedGame;

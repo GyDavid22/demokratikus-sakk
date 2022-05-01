@@ -4,17 +4,20 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.Image;
 import java.awt.event.*;
+import java.io.File;
 
 import DataStructures.Game;
 
-public class GUI implements ActionListener {
+public class GUI implements ActionListener, WindowListener {
     // Ablak és a GUI használt változói
+    private String separator;
     private JFrame window;
     private JPanel whole;
     private JTabbedPane tabs;
     private Game thisGame;
     private int minBoardSize;
     private int maxBoardSize;
+    private int defaultPawns, defaultBoardSize, defaultSpeed;
 
     // Beállító csúszkák változói
     private JPanel sliders;
@@ -33,7 +36,6 @@ public class GUI implements ActionListener {
 
     // Játékmező
     private JPanel allOfTheField;
-    private String separator;
     private ImageIcon black, white, blackonwhite, blackonblack, whiteonwhite, whiteonblack;
     private JLabel gameMessage;
     private JPanel messagePanel;
@@ -54,10 +56,17 @@ public class GUI implements ActionListener {
     private JPanel aboutTab;
 
     public GUI() {
+        this.separator = System.getProperty("file.separator");
+
+        this.defaultBoardSize = 8;
+        this.defaultPawns = 2;
+        this.defaultSpeed = 20;
+
         this.window = new JFrame("Demokratikus sakk");
         this.window.setResizable(false);
         this.window.setSize(600, 600);
         this.window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.window.addWindowListener(this);
 
         this.minBoardSize = 4;
         this.maxBoardSize = 20;
@@ -77,13 +86,17 @@ public class GUI implements ActionListener {
         initAboutTab();
         this.tabs.addTab("Névjegy", this.aboutTab);
 
-        this.window.add(this.whole);
+        this.thisGame = new Game(this.defaultPawns, this.defaultBoardSize, true);
 
-        this.thisGame = new Game(2, 8, true);
+        this.window.add(this.whole);
     }
 
     public void start() {
         this.window.setVisible(true);
+        File saveFile = new File("savefile.bin");
+        if (saveFile.exists()) {
+            loadConfirm();
+        }
         Boolean run = true;
         Boolean changed = true;
         gameTabEventLoop();
@@ -130,8 +143,7 @@ public class GUI implements ActionListener {
         this.sliders.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         this.boardSetter = new JSlider(this.minBoardSize, this.maxBoardSize);
-        this.boardSetter.setName("A tábla mérete");
-        this.boardSetter.setValue(8);
+        this.boardSetter.setValue(this.defaultBoardSize);
         this.boardSize = boardSetter.getValue();
         this.boardSetter.setBorder(new EmptyBorder(5, 5, 5, 5));
         JPanel boardTexts = new JPanel();
@@ -142,9 +154,8 @@ public class GUI implements ActionListener {
         this.sliders.add(boardTexts);
         this.sliders.add(this.boardSetter);
 
-        this.pawnSetter = new JSlider(1, 4);
-        this.pawnSetter.setName("A gyalogok sorainak száma");
-        this.pawnSetter.setValue(2);
+        this.pawnSetter = new JSlider(1, this.defaultBoardSize / 2);
+        this.pawnSetter.setValue(this.defaultPawns);
         this.pawns = pawnSetter.getValue();
         this.pawnSetter.setBorder(new EmptyBorder(5, 5, 5, 5));
         JPanel pawnTexts = new JPanel();
@@ -156,8 +167,7 @@ public class GUI implements ActionListener {
         this.sliders.add(pawnSetter);
 
         this.speed = new JSlider(20, 1000);
-        this.speed.setName("A szimuláció sebessége (ms)");
-        this.speed.setValue(20);
+        this.speed.setValue(this.defaultSpeed);
         this.speedMs = this.speed.getValue();
         this.speed.setBorder(new EmptyBorder(5, 5, 5, 5));
         JPanel speedTexts = new JPanel();
@@ -209,7 +219,6 @@ public class GUI implements ActionListener {
     private void initGameField() {
         this.allOfTheField = new JPanel();
         this.allOfTheField.setLayout(new BoxLayout(this.allOfTheField, BoxLayout.Y_AXIS));
-        this.separator = System.getProperty("file.separator");
         this.black = new ImageIcon("files" + this.separator + "black.jpg");
         this.white = new ImageIcon("files" + this.separator + "white.jpg");
         this.blackonwhite = new ImageIcon("files" + this.separator + "blackonwhite.jpg");
@@ -343,6 +352,27 @@ public class GUI implements ActionListener {
         }
     }
 
+    private void loadConfirm() {
+        JFrame dialog = new JFrame();
+        dialog.setVisible(true);
+        int result = JOptionPane.showConfirmDialog(dialog, "Mentett játékállást találtam. Szeretnéd betölteni?", "Betöltés", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            this.thisGame = Game.load("savefile.bin");
+            this.gameInProgress = true;
+        }
+        dialog.setVisible(false);
+    }
+    
+    private void saveConfirm() {
+        JFrame dialog = new JFrame();
+        dialog.setVisible(true);
+        int result = JOptionPane.showConfirmDialog(dialog, "Szeretnéd fájlbamenteni az aktuális játékállást?", "Mentés", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            this.thisGame.save("savefile.bin");
+        }
+        dialog.setVisible(false);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.startButton) {
@@ -359,4 +389,31 @@ public class GUI implements ActionListener {
             this.doReset = true;
         }
     }
+
+    @Override
+    public void windowClosing(WindowEvent we) {
+        this.paused = true;
+        if (this.gameInProgress) {
+            saveConfirm();
+        }
+    }
+
+    @Override
+    public void windowOpened(WindowEvent we) { }
+
+    @Override
+    public void windowDeiconified(WindowEvent we) { }
+
+    @Override
+    public void windowActivated(WindowEvent we) { }
+
+    @Override
+    public void windowClosed(WindowEvent we) { }
+
+    @Override
+    public void windowDeactivated(WindowEvent we) { }
+
+    @Override
+    public void windowIconified(WindowEvent we) { }
+
 }
