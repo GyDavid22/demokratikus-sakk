@@ -344,8 +344,12 @@ public class GUI implements ActionListener, WindowListener {
         dialog.setVisible(true);
         int result = JOptionPane.showConfirmDialog(dialog, "Mentett játékállást találtam. Szeretnéd betölteni?", "Betöltés", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            this.thisGame = Game.load("savefile.bin");
+            Game loaded = Game.load("savefile.bin");
             this.gameInProgress = true;
+            this.boardSize = loaded.getBoardSize();
+            this.boardSetter.setValue(this.boardSize); // különben érzékeli a különbséget maga és az előző változó között és resetel mindent
+            newGameInstance(); // hogy átméretezze a tábla elemeit
+            this.thisGame = loaded;
         }
         dialog.setVisible(false);
     }
