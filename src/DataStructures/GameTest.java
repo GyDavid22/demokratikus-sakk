@@ -1,4 +1,4 @@
-package Tests;
+package DataStructures;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -7,9 +7,11 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
-import DataStructures.*;
+import Tests.*;
 
+@Category({GlobalTestsInterface.class})
 public class GameTest {
     Game testSubject;
 
