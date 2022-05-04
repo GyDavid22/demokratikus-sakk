@@ -30,6 +30,9 @@ class Pawn extends Piece {
     }
 
     boolean doStep(Boolean aggressiveHit) throws EmptyFieldException, CannotHitThatPiece {
+        /** Kiválaszt egy random bábut az éppen soronkövetkező színűek közül, majd lépteti,
+         * ha lehet. Ennek sikerességét adja vissza a függvény
+         */
         ArrayList<int[]> possibleSteps = possibleSteps(true);
         if (possibleSteps.size() == 0) {
             return false;
@@ -49,6 +52,10 @@ class Pawn extends Piece {
     }
 
     ArrayList<int[]> possibleSteps(Boolean aggressiveHit) {
+        /** Az összes lehetséges lépés vektorát adja vissza, beleértve a lehetséges leütéseket is.
+         * aggressiveHit == true érték esetén utóbbit választjuk mindig, ha van.
+         * Ha nincs semmi, 0 elemű a lista.
+         */
         ArrayList<int[]> returnValues = possibleHits();
         if (returnValues.size() > 0 && aggressiveHit) {
             return returnValues; // nem vizsgálunk tovább, ha ütni lehet, azt preferáljuk
@@ -85,6 +92,7 @@ class Pawn extends Piece {
     }
 
     ArrayList<int[]> possibleHits() {
+        /** A lehetséges leütések vektoraival tér vissza, ha nincsenek 0 elemű a lista. */
         ArrayList<int[]> returnValues = new ArrayList<>();
         Board partOf = getBoard();
 
@@ -136,6 +144,7 @@ class Pawn extends Piece {
     }
 
     boolean equals(Pawn rhs) {
+        /** Tartalmi, nem referenciaalapú egyezés ellenőrzése. */
         if (!super.equals(rhs)) {
             return false;
         }

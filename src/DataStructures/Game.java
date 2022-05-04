@@ -50,6 +50,7 @@ public class Game {
     }
 
     public void initialize() throws OccupiedFieldException {
+        /** Játéktábla feltöltése a kezdeti játékállással */
         for (int i = 0; i < this.linesOfPawns; ++i) {
             for (int j = 0; j < board.getBoardSize(); ++j) {
                 int[] actpos = { i, j };
@@ -65,6 +66,7 @@ public class Game {
     }
 
     public void doRound() {
+        /** Az egyik fél egy lépését levezénylő függvény */
         if (this.isGameOver) {
             return;
         }
@@ -139,6 +141,7 @@ public class Game {
     }
 
     public BoardValue askBoard(int x, int y) {
+        /** Enum érték visszaadásával válaszol, hogy az adott pontban milyen színű bábu áll. (x: sor, y: oszlop) */
         int[] posArray = { x, y };
         if (this.board.isEmpty(posArray)) {
             return BoardValue.NONE;
@@ -170,6 +173,7 @@ public class Game {
     }
 
     public void save(String path) {
+        /** Az osztály fájlba mentése az attribútumokkal együtt, rekurzív módon */
         try {
             File saveFile = new File(path);
             if (!saveFile.exists()) {
@@ -194,6 +198,9 @@ public class Game {
     }
 
     public static Game load(String path) {
+        /** Az osztály visszatöltése fájlból, az attribútumokkal együtt rekurzív módon.
+         * A visszatérési érték a betöltött objektum.
+         */
         Game loadedGame = null;
         try {
             FileInputStream fis = new FileInputStream(path);
@@ -229,6 +236,7 @@ public class Game {
     }
 
     public boolean equals(Game rhs) {
+        /** Tartalmi, azaz nem referencia alapú egyezés vizsgálata */
         if (!this.board.equals(rhs.board)) {
             return false;
         }

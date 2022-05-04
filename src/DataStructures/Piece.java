@@ -54,6 +54,7 @@ abstract class Piece implements Serializable {
     abstract ArrayList<int[]> possibleHits();
 
     boolean equals(Piece rhs) {
+        /** Tartalmi, azaz nem referenciaalapú egyezés ellenőrzése */
         if (!this.isBlack.equals(rhs.isBlack)) {
             return false;
         }

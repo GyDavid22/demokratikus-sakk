@@ -24,6 +24,7 @@ class Board implements Serializable {
     private Board() { }
 
     void placePiece(Piece that) throws OccupiedFieldException {
+        /** Bábu elhelyezése a játéktáblán */
         int[] to = that.getPos();
         if (!isEmpty(to)) {
             throw new OccupiedFieldException();
@@ -37,6 +38,7 @@ class Board implements Serializable {
     }
 
     void movePiece(Piece that, int[] destPos) throws EmptyFieldException, CannotHitThatPiece {
+        /** Bábu mozgatása a játéktáblán */
         if (isEmpty(destPos)) {
             removePiece(that.getPos(), true);
             field[destPos[0]][destPos[1]] = that;
@@ -53,6 +55,7 @@ class Board implements Serializable {
     }
 
     private void removePiece(int[] from, boolean onlyMoved) throws EmptyFieldException {
+        /** Bábu levétele a játéktábláról */
         if (isEmpty(from)) {
             throw new EmptyFieldException();
         }
@@ -113,6 +116,7 @@ class Board implements Serializable {
     }
 
     int numOfPieces(boolean blacksWanted) {
+        /** Visszaadja, hogy hány darab van a kért színű bábukból a táblán */
         if (blacksWanted) {
             return this.blacks.size();
         }
@@ -120,6 +124,8 @@ class Board implements Serializable {
     }
 
     ArrayList<Piece> getList(boolean blackWanted) {
+        /** Sekély másolatot ad vissza a bábukat tartalmazó ArrayListről */
+        // sekély másolatot adunk vissza, ugyanis így a visszatérési értéken keresztül magát az eredeti listát nem lehet módosítani
         ArrayList<Piece> shallowCopy = new ArrayList<>();
         if (blackWanted) {
             for (Piece i : this.blacks) {
@@ -133,6 +139,7 @@ class Board implements Serializable {
         return shallowCopy;
     }
     void save(ObjectOutputStream oos) throws IOException {
+        /** Az osztályt ObjectOutputStreamre író függvény */
         oos.writeObject(this.field);
         oos.writeObject(this.whites);
         oos.writeObject(this.blacks);
@@ -140,6 +147,7 @@ class Board implements Serializable {
     }
 
     static Board load(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        /** Azt osztályt ObjectInputStreamről beolvasó függvény */
         Board loadedObject = new Board();
         loadedObject.field = (Piece[][]) ois.readObject();
         loadedObject.whites = (ArrayList<Piece>) ois.readObject();
@@ -149,6 +157,7 @@ class Board implements Serializable {
     }
 
     boolean equals(Board rhs) {
+        /** Tartalmi, azaz nem referenciaalapú egyezés ellenőrzése */
         try {
             for (int i = 0; i < this.field.length; ++i) {
                 for (int j = 0; j < this.field[i].length; ++j) {
