@@ -227,4 +227,30 @@ public class Game {
         
         return loadedGame;
     }
+
+    public boolean equals(Game rhs) {
+        if (!this.board.equals(rhs.board)) {
+            return false;
+        }
+        if (!this.blackSteps.equals(rhs.blackSteps)) {
+            return false;
+        }
+        if (!this.isGameOver.equals(rhs.isGameOver)) {
+            return false;
+        }
+        if (!this.gameOverMessage.equals(rhs.gameOverMessage)) {
+            return false;
+        }
+        if (this.linesOfPawns != rhs.linesOfPawns) {
+            return false;
+        }
+        if (!this.aggressiveHit.equals(rhs.aggressiveHit)) {
+            return false;
+        }
+        if (this.boardSize != rhs.boardSize) {
+            return false;
+        }
+
+        return true;
+    }
 }

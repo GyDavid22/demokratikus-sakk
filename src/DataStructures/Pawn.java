@@ -134,4 +134,26 @@ class Pawn extends Piece {
 
         return loadedObject;
     }
+
+    boolean equals(Pawn rhs) {
+        if (!super.equals(rhs)) {
+            return false;
+        }
+        if (!this.isFirstStep.equals(rhs.isFirstStep)) {
+            return false;
+        }
+        try {
+            for (int i = 0; i < this.stepDirections.length; ++i) {
+                for (int j = 0; j < this.stepDirections[i].length; ++j) {
+                    if (this.stepDirections[i][j] != rhs.stepDirections[i][j]) {
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
+    }
 }

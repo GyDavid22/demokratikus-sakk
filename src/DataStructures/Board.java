@@ -147,4 +147,39 @@ class Board implements Serializable {
         loadedObject.boardSize = (int) ois.readObject();
         return loadedObject;
     }
+
+    boolean equals(Board rhs) {
+        try {
+            for (int i = 0; i < this.field.length; ++i) {
+                for (int j = 0; j < this.field[i].length; ++j) {
+                    if (this.field[i][j] != null && (!this.field[i][j].equals(rhs.field[i][j]))) {
+                        return false;
+                    }
+                }
+            }
+            if (this.whites.size() != rhs.whites.size()) {
+                return false;
+            }
+            for (int i = 0; i < this.whites.size(); ++i) {
+                if (!this.whites.get(i).equals(rhs.whites.get(i))) {
+                    return false;
+                }
+            }
+            if (this.blacks.size() != rhs.blacks.size()) {
+                return false;
+            }
+            for (int i = 0; i < this.blacks.size(); ++i) {
+                if (!this.blacks.get(i).equals(rhs.blacks.get(i))) {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        if (this.boardSize != rhs.boardSize) {
+            return false;
+        }
+
+        return true;
+    }
 }

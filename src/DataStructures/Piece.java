@@ -52,4 +52,21 @@ abstract class Piece implements Serializable {
 
     abstract ArrayList<int[]> possibleSteps(Boolean aggressiveHit);
     abstract ArrayList<int[]> possibleHits();
+
+    boolean equals(Piece rhs) {
+        if (!this.isBlack.equals(rhs.isBlack)) {
+            return false;
+        }
+        if (!this.type.equals(rhs.type)) {
+            return false;
+        }
+        if (this.pos.length != 2 || rhs.pos.length != 2) {
+            return false;
+        }
+        if (this.pos[0] != rhs.pos[0] || this.pos[1] != rhs.pos[1]) {
+            return false;
+        }
+
+        return true;
+    } // a tábla tartalmát itt nem ellenőrizzük, mert végtelen rekurzió lenne belőle
 }
