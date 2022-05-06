@@ -9,6 +9,10 @@ import java.util.TreeMap;
 
 import DataStructures.Game;
 
+/**
+ * A grafikus felületet megvalósító osztály, Game osztályt is példányosít
+ * magának.
+ */
 public class GUI implements ActionListener, WindowListener {
     // Ablak és a GUI használt változói
     private String separator;
@@ -58,8 +62,11 @@ public class GUI implements ActionListener, WindowListener {
     // Névjegy fül
     private JPanel aboutTab;
 
+    /**
+     * A konstruktor inicializál minden változót, az egyes fülek betöltése külön
+     * függvénybe van kiszervezve
+     */
     public GUI() {
-        /** A konstruktor inicializál minden változót, az egyes fülek betöltése külön függvénybe van kiszervezve */
         this.separator = System.getProperty("file.separator");
 
         if (GUI.originalBlacks.size() == 0) {
@@ -109,8 +116,11 @@ public class GUI implements ActionListener, WindowListener {
         this.window.add(this.whole);
     }
 
+    /**
+     * Megjeleníti a játékablakot, illetve futtatja az eseményhurkot. A függvény a
+     * főablak bezárásával áll le.
+     */
     public void start() {
-        /** Megjeleníti a játékablakot, illetve futtatja az eseményhurkot. A függvény a főablak bezárásával áll le. */
         this.window.setVisible(true);
         File saveFile = new File("savefile.bin");
         if (saveFile.exists()) {
@@ -156,8 +166,11 @@ public class GUI implements ActionListener, WindowListener {
         }
     }
 
+    /**
+     * A beállítások lapon lévő beállító csúszkák inicializálása, initSettingsTab()
+     * hívja meg.
+     */
     private void initSliders() {
-        /** A beállítások lapon lévő beállító csúszkák inicializálása, initSettingsTab() hívja meg. */
         this.sliders = new JPanel();
         this.sliders.setLayout(new BoxLayout(sliders, BoxLayout.Y_AXIS));
         this.sliders.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -199,10 +212,13 @@ public class GUI implements ActionListener, WindowListener {
         this.sliders.add(this.speed);
     }
 
+    /**
+     * A csúszkákra vonatkozó rész az eseményhurokból, a visszatérési érték megadja,
+     * hogy változott-e valamelyik érték. settingsTabLoop() hívja meg.
+     * 
+     * @return Történt-e változás a beállításokban?
+     */
     private Boolean sliderLoop() {
-        /** A csúszkákra vonatkozó rész az eseményhurokból, a visszatérési érték megadja, hogy változott-e valamelyik érték.
-         * settingsTabLoop() hívja meg.
-         */
         Boolean changeHappened = false;
         if (this.boardSetter.getValue() != this.boardSize) {
             this.boardSize = this.boardSetter.getValue();
@@ -228,23 +244,30 @@ public class GUI implements ActionListener, WindowListener {
         return changeHappened;
     }
 
+    /**
+     * A beállítások fül inicializálása, a konstruktor hívja meg.
+     */
     private void initSettingsTab() {
-        /** A beállítások fül inicializálása, a konstruktor hívja meg. */
         this.settingsTab = new JPanel();
         this.settingsTab.setLayout(new BoxLayout(settingsTab, BoxLayout.Y_AXIS));
         initSliders();
         this.settingsTab.add(this.sliders);
     }
 
+    /**
+     * A beállítások fül része az eseményhurokból, azt adja tovább, hogy a
+     * csúszkákkal állítva változott-e valamelyik érték. start() hívja meg.
+     * 
+     * @return Történt-e változás a beállított értékekben?
+     */
     private Boolean settingsTabLoop() {
-        /** A beállítások fül része az eseményhurokból, azt adja tovább, hogy a csúszkákkal állítva változott-e valamelyik érték.
-         * start() hívja meg.
-        */
         return sliderLoop();
     }
 
+    /**
+     * A játéktáblát kirajzoló elemek inicializálása. A konstruktor hívja meg.
+     */
     private void initGameField() {
-        /** A játéktáblát kirajzoló elemek inicializálása. A konstruktor hívja meg. */
         this.allOfTheField = new JPanel();
         this.allOfTheField.setLayout(new BoxLayout(this.allOfTheField, BoxLayout.Y_AXIS));
 
@@ -261,8 +284,11 @@ public class GUI implements ActionListener, WindowListener {
         this.allOfTheField.setBorder(new EmptyBorder(20, 20, 20, 20));
     }
 
+    /**
+     * A játéktábla frissítése az aktuális állás alapján. gameTabEventLoop() hívja
+     * meg.
+     */
     private void refreshGameField() {
-        /** A játéktábla frissítése az aktuális állás alapján. gameTabEventLoop() hívja meg. */
         JPanel currentState = new JPanel();
         currentState.setLayout(new BoxLayout(currentState, BoxLayout.Y_AXIS));
         this.field.removeAll();
@@ -289,8 +315,10 @@ public class GUI implements ActionListener, WindowListener {
         this.field.add(currentState);
     }
 
+    /**
+     * A játékot vezérlő gombokat megvalósító változók inicializálása
+     */
     private void initGameButtons() {
-        /** A játékot vezérlő gombokat megvalósító változók inicializálása */
         this.buttons = new JPanel();
         this.buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
 
@@ -316,8 +344,11 @@ public class GUI implements ActionListener, WindowListener {
         this.doReset = false;
     }
 
+    /**
+     * A játékot vezérlő gombokhoz tartozó rész az eseményhurokból,
+     * gameTabEventLoop() hívja meg
+     */
     private void gameButtonsEventLoop() {
-        /** A játékot vezérlő gombokhoz tartozó rész az eseményhurokból, gameTabEventLoop() hívja meg */
         if (!this.paused && this.gameInProgress) {
             this.startButton.setText("Szünet");
         } else {
@@ -325,8 +356,11 @@ public class GUI implements ActionListener, WindowListener {
         }
     }
 
+    /**
+     * A játéktáblát és a játékot vezérlő gombokat inicializáló függvény, a
+     * konstruktor hívja meg
+     */
     private void initGameTab() {
-        /** A játéktáblát és a játékot vezérlő gombokat inicializáló függvény, a konstruktor hívja meg */
         this.gameTab = new JPanel();
         this.gameTab.setLayout(new BoxLayout(this.gameTab, BoxLayout.Y_AXIS));
 
@@ -337,14 +371,18 @@ public class GUI implements ActionListener, WindowListener {
         this.gameTab.add(this.buttons);
     }
 
+    /**
+     * A játék fül része az eseményhurokból, start() hívja meg
+     */
     private void gameTabEventLoop() {
-        /** A játék fül része az eseményhurokból, start() hívja meg */
         refreshGameField();
         gameButtonsEventLoop();
     }
 
+    /**
+     * Névjegy fül inicializálása, a konstruktor hívja meg
+     */
     private void initAboutTab() {
-        /** Névjegy fül inicializálása, a konstruktor hívja meg */
         this.aboutTab = new JPanel();
         this.aboutTab.setLayout(new BoxLayout(aboutTab, BoxLayout.Y_AXIS));
         String aboutText = "Demokratikus sakk v1.0\nKészítette: Gyenes Dávid András\nKészült a BME üzemmérnök-informatikus képzésének Objektumorientált programozás tárgyának\nnagy házi feladataként.\n2022";
@@ -356,54 +394,73 @@ public class GUI implements ActionListener, WindowListener {
         }
     }
 
+    /**
+     * Megtalált játékállás esetén megkérdezi, hogy betöltse-e azt, és el is végzi a
+     * betöltést
+     */
     private void loadConfirm() {
-        /** Megtalált játékállás esetén megkérdezi, hogy betöltse-e azt, és el is végzi a betöltést */
         JFrame dialog = new JFrame();
         dialog.setVisible(true);
-        int result = JOptionPane.showConfirmDialog(dialog, "Mentett játékállást találtam. Szeretnéd betölteni?", "Betöltés", JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog(dialog, "Mentett játékállást találtam. Szeretnéd betölteni?",
+                "Betöltés", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             Game loaded = Game.load("savefile.bin");
             this.gameInProgress = true;
             this.boardSize = loaded.getBoardSize();
-            this.boardSetter.setValue(this.boardSize); // különben érzékeli a különbséget maga és az előző változó között és resetel mindent
+            this.boardSetter.setValue(this.boardSize); // különben érzékeli a különbséget maga és az előző változó
+                                                       // között és resetel mindent
             newGameInstance(); // hogy átméretezze a tábla elemeit
             this.thisGame = loaded;
         }
         dialog.setVisible(false);
     }
-    
+
+    /**
+     * Bezáráskor rákérdezés a félbeszakított játék elmentésére, el is végzi a
+     * mentést.
+     */
     private void saveConfirm() {
-        /** Bezáráskor rákérdezés a félbeszakított játék elmentésére, el is végzi a mentést. */
         JFrame dialog = new JFrame();
         dialog.setVisible(true);
-        int result = JOptionPane.showConfirmDialog(dialog, "Szeretnéd fájlbamenteni az aktuális játékállást?", "Mentés", JOptionPane.YES_NO_OPTION);
+        int result = JOptionPane.showConfirmDialog(dialog, "Szeretnéd fájlbamenteni az aktuális játékállást?", "Mentés",
+                JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             this.thisGame.save("savefile.bin");
         }
         dialog.setVisible(false);
     }
 
+    /**
+     * Amennyiben this.thisGame-t egy új példánnyal írjuk felül, ezt a függvényt
+     * kell használni, ugyanis
+     * a tábla egyes mezőinek a szükséges méretre igazítása is itt történik meg, az
+     * új példány létrehozása mellett.
+     */
     private void newGameInstance() {
-        /** Amennyiben this.thisGame-t egy új példánnyal írjuk felül, ezt a függvényt kell használni, ugyanis
-         * a tábla egyes mezőinek a szükséges méretre igazítása is itt történik meg, az új példány létrehozása mellett.
-         */
-
         this.miniBlacks.clear();
-        this.miniBlacks.put(Game.BoardValue.NONE, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.NONE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
-        this.miniBlacks.put(Game.BoardValue.BLACK, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.BLACK).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
-        this.miniBlacks.put(Game.BoardValue.WHITE, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.WHITE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniBlacks.put(Game.BoardValue.NONE, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.NONE).getImage()
+                .getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniBlacks.put(Game.BoardValue.BLACK, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.BLACK)
+                .getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniBlacks.put(Game.BoardValue.WHITE, new ImageIcon(GUI.originalBlacks.get(Game.BoardValue.WHITE)
+                .getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
 
         this.miniWhites.clear();
-        this.miniWhites.put(Game.BoardValue.NONE, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.NONE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
-        this.miniWhites.put(Game.BoardValue.BLACK, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.BLACK).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
-        this.miniWhites.put(Game.BoardValue.WHITE, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.WHITE).getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniWhites.put(Game.BoardValue.NONE, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.NONE).getImage()
+                .getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniWhites.put(Game.BoardValue.BLACK, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.BLACK)
+                .getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
+        this.miniWhites.put(Game.BoardValue.WHITE, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.WHITE)
+                .getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
 
         this.thisGame = new Game(this.pawns, this.boardSize, true);
     }
-    
+
+    /**
+     * Játékvezérlő gombok funkcionalitása
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
-        /** Játékvezérlő gombok funkcionalitása */
         if (e.getSource() == this.startButton) {
             if (this.gameInProgress) {
                 this.paused = !this.paused;
@@ -419,33 +476,42 @@ public class GUI implements ActionListener, WindowListener {
         }
     }
 
+    /**
+     * Ablak bezárásának érzékelése
+     */
     @Override
     public void windowClosing(WindowEvent we) {
-        /** Ablak bezárásának érzékelése */
         this.paused = true;
         if (this.gameInProgress) {
             saveConfirm();
         }
     }
 
-    // Alább WindowsListener interfész kötelezően implementálandó, de itt nem használt függvényei vannak.
+    // Alább WindowsListener interfész kötelezően implementálandó, de itt nem
+    // használt függvényei vannak.
 
     @Override
-    public void windowOpened(WindowEvent we) { }
+    public void windowOpened(WindowEvent we) {
+    }
 
     @Override
-    public void windowDeiconified(WindowEvent we) { }
+    public void windowDeiconified(WindowEvent we) {
+    }
 
     @Override
-    public void windowActivated(WindowEvent we) { }
+    public void windowActivated(WindowEvent we) {
+    }
 
     @Override
-    public void windowClosed(WindowEvent we) { }
+    public void windowClosed(WindowEvent we) {
+    }
 
     @Override
-    public void windowDeactivated(WindowEvent we) { }
+    public void windowDeactivated(WindowEvent we) {
+    }
 
     @Override
-    public void windowIconified(WindowEvent we) { }
+    public void windowIconified(WindowEvent we) {
+    }
 
 }

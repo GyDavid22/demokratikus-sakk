@@ -1,5 +1,8 @@
 package Exceptions;
 
+/**
+ * Kivétel arra az esetre, ha egy bábuval egy olyan másik bábut ütnénk le, amit nem lehet a szabályok értelmében.
+ */
 public class CannotHitThatPiece extends Exception {
     private String message;
 

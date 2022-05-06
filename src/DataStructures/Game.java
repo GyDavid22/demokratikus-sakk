@@ -12,6 +12,9 @@ import Exceptions.EmptyFieldException;
 import Exceptions.NotEnoughPawnsException;
 import Exceptions.OccupiedFieldException;
 
+/**
+ * A játékot vezérlő osztály.
+ */
 public class Game {
     private Board board;
     private Boolean blackSteps;
@@ -21,10 +24,18 @@ public class Game {
     private Boolean aggressiveHit;
     private int boardSize;
 
+    /**
+     * askBoard() visszatérési értéke
+     */
     public enum BoardValue {
         NONE, WHITE, BLACK
     }
 
+    /**
+     * @param linesOfPawns A játéktáblára felállítandó gyalogok sorainak száma per játékos.
+     * @param boardSize Az n*n-es játéktábla kívánt oldalhossza.
+     * @param aggressiveHit Amennyiben egy bábu le tud ütni valakit, megtegye-e biztosan?
+     */
     public Game(int linesOfPawns, int boardSize, Boolean aggressiveHit) {
         this.linesOfPawns = linesOfPawns;
         this.board = new Board(boardSize);
@@ -49,8 +60,11 @@ public class Game {
         this.boardSize = boardSize;
     }
 
+    /**
+     * Játéktábla feltöltése a kezdeti játékállással. A konstruktor meghívja.
+     * @throws OccupiedFieldException Akkor fordul elő, ha a gyalogok nem férnek el a táblán.
+     */
     public void initialize() throws OccupiedFieldException {
-        /** Játéktábla feltöltése a kezdeti játékállással */
         for (int i = 0; i < this.linesOfPawns; ++i) {
             for (int j = 0; j < board.getBoardSize(); ++j) {
                 int[] actpos = { i, j };
@@ -65,8 +79,10 @@ public class Game {
         }
     }
 
+    /**
+     * Az egyik fél egy lépését levezénylő függvény.
+     */
     public void doRound() {
-        /** Az egyik fél egy lépését levezénylő függvény */
         if (this.isGameOver) {
             return;
         }
@@ -140,8 +156,13 @@ public class Game {
         return this.boardSize;
     }
 
+    /**
+     * Le lehet kérdezni vele, hogy a játéktábla adott mezőjén milyen bábu áll.
+     * @param x Lekérdezni kívánt sor.
+     * @param y Lekérdezni kívánt oszlop.
+     * @return Fekete/fehér/semmi
+     */
     public BoardValue askBoard(int x, int y) {
-        /** Enum érték visszaadásával válaszol, hogy az adott pontban milyen színű bábu áll. (x: sor, y: oszlop) */
         int[] posArray = { x, y };
         if (this.board.isEmpty(posArray)) {
             return BoardValue.NONE;
@@ -172,8 +193,11 @@ public class Game {
         return this.gameOverMessage;
     }
 
+    /**
+     * Az osztály fájlba mentése az attribútumokkal együtt, rekurzív módon
+     * @param path Mentési fájl kívánt relatív útvonala és neve, kiterjesztéssel.
+     */
     public void save(String path) {
-        /** Az osztály fájlba mentése az attribútumokkal együtt, rekurzív módon */
         try {
             File saveFile = new File(path);
             if (!saveFile.exists()) {
@@ -197,10 +221,12 @@ public class Game {
         }
     }
 
+    /**
+     * Az osztály visszatöltése fájlból, az attribútumokkal együtt rekurzív módon.
+     * @param path A betölteni kívánt fájl relatív útvonala, neve és kiterjesztése.
+     * @return A betöltött objektum.
+     */
     public static Game load(String path) {
-        /** Az osztály visszatöltése fájlból, az attribútumokkal együtt rekurzív módon.
-         * A visszatérési érték a betöltött objektum.
-         */
         Game loadedGame = null;
         try {
             FileInputStream fis = new FileInputStream(path);
@@ -235,8 +261,12 @@ public class Game {
         return loadedGame;
     }
 
+    /**
+     * Tartalmi, azaz nem referencia alapú egyezés vizsgálata
+     * @param rhs Az objektum, amivel összehasonlítanánk.
+     * @return True/false az egyezés függvényében.
+     */
     public boolean equals(Game rhs) {
-        /** Tartalmi, azaz nem referencia alapú egyezés vizsgálata */
         if (!this.board.equals(rhs.board)) {
             return false;
         }

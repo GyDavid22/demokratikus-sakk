@@ -7,12 +7,21 @@ import java.util.ArrayList;
 
 import Exceptions.*;
 
+/**
+ * Az egyes bábukat reprezentáló absztrakt osztály.
+ */
 abstract class Piece implements Serializable {
     private Boolean isBlack;
     private String type;
     private int[] pos;
     private Board partOf;
 
+    /**
+     * @param isBlack Fekete legyen?
+     * @param pos     Pozíció a tartalazó táblának megfelelően.
+     * @param type    A bábu típusa szövegesen.
+     * @param partOf  A tábla, amin a bábu áll.
+     */
     Piece(Boolean isBlack, int[] pos, String type, Board partOf) {
         this.isBlack = isBlack;
         this.pos = pos;
@@ -20,7 +29,18 @@ abstract class Piece implements Serializable {
         this.partOf = partOf;
     }
 
-    abstract boolean doStep(Boolean aggressiveHit) throws EmptyFieldException, CannotHitThatPiece; // annak megfelelően tér vissza, hogy a lépés sikeres volt-e
+    /**
+     * Kiválaszt egy random bábut az éppen soronkövetkező színűek közül, majd
+     * lépteti,
+     * ha lehet. Ennek sikerességét adja vissza a függvény
+     * 
+     * @param aggressiveHit True: amennyiben a bábu képes leütni valakit, megteszi.
+     * @return Sikeres volt-e a lépés? (Tud-e lépni az adott bábu?)
+     * @throws EmptyFieldException Hívott függvényekhez tartozik, feljebb kezeljük.
+     * @throws CannotHitThatPiece  Hívott függvényekhez tartozik, feljebb kezeljük.
+     */
+    abstract boolean doStep(Boolean aggressiveHit) throws EmptyFieldException, CannotHitThatPiece;
+    // annak megfelelően tér vissza, hogy a lépés sikeres volt-e
 
     boolean isBlack() {
         return this.isBlack;
@@ -29,7 +49,7 @@ abstract class Piece implements Serializable {
     String getType() {
         return this.type;
     }
-    
+
     int[] getPos() {
         return this.pos;
     }
@@ -43,18 +63,32 @@ abstract class Piece implements Serializable {
     }
 
     void save(ObjectOutputStream oos) throws IOException {
+        /**
+         * Függvény fájlba mentéshez.
+         * 
+         * @param oos Erre az ObjectOutputStreamre ír.
+         * @throws IOException Kötelező kezelni, azonban a hívó függvényben több értelme
+         *                     van.
+         */
         oos.writeObject(this.isBlack);
         oos.writeObject(this.pos);
         oos.writeObject(this.partOf);
     }
 
-    //abstract Piece load(ObjectInputStream ois) throws IOException, ClassNotFoundException;
+    // abstract Piece load(ObjectInputStream ois) throws IOException,
+    // ClassNotFoundException;
 
     abstract ArrayList<int[]> possibleSteps(Boolean aggressiveHit);
+
     abstract ArrayList<int[]> possibleHits();
 
+    /**
+     * Tartalmi, azaz nem referenciaalapú egyezés ellenőrzése
+     * 
+     * @param rhs A Piece, amivel összehasonlítanánk.
+     * @return True vagy false egyezéstől függően.
+     */
     boolean equals(Piece rhs) {
-        /** Tartalmi, azaz nem referenciaalapú egyezés ellenőrzése */
         if (!this.isBlack.equals(rhs.isBlack)) {
             return false;
         }

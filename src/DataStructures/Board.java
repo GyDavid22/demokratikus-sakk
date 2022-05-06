@@ -8,12 +8,18 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * A játéktáblát megvalósító osztály.
+ */
 class Board implements Serializable {
     private Piece[][] field;
     private ArrayList<Piece> whites;
     private ArrayList<Piece> blacks;
     private int boardSize;
 
+    /**
+     * @param boardSize Az n*n-es tábla oldalhossza.
+     */
     Board(int boardSize) {
         this.whites = new ArrayList<>();
         this.blacks = new ArrayList<>();
@@ -21,10 +27,18 @@ class Board implements Serializable {
         this.field = new Piece[this.boardSize][this.boardSize];
     }
 
-    private Board() { }
+    private Board() {
+    }
 
+    /**
+     * Bábu elhelyezése a játéktáblán
+     * 
+     * @param that A bábu, amit elhelyeznénk, már tartalmazza a pozíciót, innen
+     *             olvassuk ki.
+     * @throws OccupiedFieldException Amennyiben foglalt mezőre helyezünk, ez a
+     *                                kivétel keletkezik.
+     */
     void placePiece(Piece that) throws OccupiedFieldException {
-        /** Bábu elhelyezése a játéktáblán */
         int[] to = that.getPos();
         if (!isEmpty(to)) {
             throw new OccupiedFieldException();
@@ -37,8 +51,18 @@ class Board implements Serializable {
         }
     }
 
+    /**
+     * Bábu mozgatása a játéktáblán
+     * 
+     * @param that    A bábu amit áthelyezünk.
+     * @param destPos A pozíció, ahova áthelyeznénk a bábut. A függvény átállítja a
+     *                bábuban található értéket.
+     * @throws EmptyFieldException Hívott függvények dobják, de nem fordul elő ebben
+     *                             a kódban.
+     * @throws CannotHitThatPiece  Amennyiben a cél mezőn azonos színű bábu áll, az
+     *                             nem üthetjük le, nem léphetünk oda.
+     */
     void movePiece(Piece that, int[] destPos) throws EmptyFieldException, CannotHitThatPiece {
-        /** Bábu mozgatása a játéktáblán */
         if (isEmpty(destPos)) {
             removePiece(that.getPos(), true);
             field[destPos[0]][destPos[1]] = that;
@@ -54,8 +78,17 @@ class Board implements Serializable {
         }
     }
 
+    /**
+     * Bábu levétele a játéktábláról
+     * 
+     * @param from      A pozíció, ahonnan levennénk egy bábut.
+     * @param onlyMoved Ha értéke true, nem töröljük az adott bábut a
+     *                  nyilvántartásból, mert csak máshova lett helyezve. Ha false,
+     *                  törölve lesz, mert le lett szedve a tábláról.
+     * @throws EmptyFieldException Akkor keletkezik, ha üres mezőről vennénk le
+     *                             bábut.
+     */
     private void removePiece(int[] from, boolean onlyMoved) throws EmptyFieldException {
-        /** Bábu levétele a játéktábláról */
         if (isEmpty(from)) {
             throw new EmptyFieldException();
         }
@@ -115,17 +148,26 @@ class Board implements Serializable {
         return sb.toString();
     }
 
+    /**
+     * Visszaadja, hogy hány darab van a kért színű bábukból a táblán
+     * 
+     * @param blacksWanted A feketék számát adjuk vissza?
+     */
     int numOfPieces(boolean blacksWanted) {
-        /** Visszaadja, hogy hány darab van a kért színű bábukból a táblán */
         if (blacksWanted) {
             return this.blacks.size();
         }
         return this.whites.size();
     }
 
+    /**
+     * Sekély másolatot ad vissza a bábukat tartalmazó ArrayListről
+     * 
+     * @param blackWanted A feketékről adjunk vissza másolatot?
+     */
     ArrayList<Piece> getList(boolean blackWanted) {
-        /** Sekély másolatot ad vissza a bábukat tartalmazó ArrayListről */
-        // sekély másolatot adunk vissza, ugyanis így a visszatérési értéken keresztül magát az eredeti listát nem lehet módosítani
+        // sekély másolatot adunk vissza, ugyanis így a visszatérési értéken keresztül
+        // magát az eredeti listát nem lehet módosítani
         ArrayList<Piece> shallowCopy = new ArrayList<>();
         if (blackWanted) {
             for (Piece i : this.blacks) {
@@ -138,16 +180,31 @@ class Board implements Serializable {
         }
         return shallowCopy;
     }
+
+    /**
+     * Az osztályt ObjectOutputStreamre író függvény
+     * 
+     * @param oos Erre az ObjectOutputStreamre ír.
+     * @throws IOException Kötelező kezelni, azonban a hívó függvényben több értelme
+     *                     van.
+     */
     void save(ObjectOutputStream oos) throws IOException {
-        /** Az osztályt ObjectOutputStreamre író függvény */
         oos.writeObject(this.field);
         oos.writeObject(this.whites);
         oos.writeObject(this.blacks);
         oos.writeObject(this.boardSize);
     }
 
+    /**
+     * Azt osztályt ObjectInputStreamről beolvasó függvény
+     * 
+     * @param ois Erre az ObjectInputStreamre ír.
+     * @throws IOException            Kötelező kezelni, azonban a hívó függvényben
+     *                                több értelme van.
+     * @throws ClassNotFoundException Kötelező kezelni, azonban a hívó függvényben
+     *                                több értelme van.
+     */
     static Board load(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        /** Azt osztályt ObjectInputStreamről beolvasó függvény */
         Board loadedObject = new Board();
         loadedObject.field = (Piece[][]) ois.readObject();
         loadedObject.whites = (ArrayList<Piece>) ois.readObject();
@@ -156,8 +213,13 @@ class Board implements Serializable {
         return loadedObject;
     }
 
+    /**
+     * Tartalmi, azaz nem referenciaalapú egyezés ellenőrzése
+     * 
+     * @param rhs A Board, amivel összehasonlítunk.
+     * @return True vagy false egyezéstől függően.
+     */
     boolean equals(Board rhs) {
-        /** Tartalmi, azaz nem referenciaalapú egyezés ellenőrzése */
         try {
             for (int i = 0; i < this.field.length; ++i) {
                 for (int j = 0; j < this.field[i].length; ++j) {
