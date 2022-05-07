@@ -75,11 +75,20 @@ abstract class Piece implements Serializable {
         oos.writeObject(this.partOf);
     }
 
-    // abstract Piece load(ObjectInputStream ois) throws IOException,
-    // ClassNotFoundException;
-
+    /**
+     * Az összes lehetséges lépés vektorát adja vissza, beleértve a lehetséges
+     * leütéseket is.
+     * 
+     * @param aggressiveHit True: amennyiben a bábu képes leütni valakit, megteszi.
+     * @return A lehetséges lépések vektora. (Ha nincs, 0 elemű.)
+     */
     abstract ArrayList<int[]> possibleSteps(Boolean aggressiveHit);
 
+    /**
+     * A lehetséges leütések vektoraival tér vissza.
+     * 
+     * @return A lehetséges ütések vektora. (Ha nincs, 0 elemű.)
+     */
     abstract ArrayList<int[]> possibleHits();
 
     /**
