@@ -6,6 +6,8 @@ import java.awt.Image;
 import java.awt.event.*;
 import java.io.File;
 import java.util.TreeMap;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import DataStructures.Game;
 
@@ -19,6 +21,9 @@ public class GUI implements ActionListener, WindowListener {
     private JFrame window;
     private JPanel whole;
     private JTabbedPane tabs;
+    /**
+     * FONTOS! A setterét használd!
+     */
     private Game thisGame;
     private int minBoardSize;
     private int maxBoardSize;
@@ -33,6 +38,9 @@ public class GUI implements ActionListener, WindowListener {
     private int pawns;
     private JLabel pawncount;
     private JSlider speed;
+    /**
+     * FONTOS! A setterét használd!
+     */
     private int speedMs;
     private JLabel speedLabel;
 
@@ -53,6 +61,9 @@ public class GUI implements ActionListener, WindowListener {
     private JButton startButton;
     private JButton reset;
     private Boolean gameInProgress;
+    /**
+     * FONTOS! A setterét használt!
+     */
     private Boolean paused;
     private Boolean doReset;
 
@@ -61,6 +72,10 @@ public class GUI implements ActionListener, WindowListener {
 
     // Névjegy fül
     private JPanel aboutTab;
+
+    private GameTimer gameTimer = new GameTimer(this);
+
+    private BlockingQueue<Runnable> bq = new LinkedBlockingQueue<Runnable>();
 
     /**
      * A konstruktor inicializál minden változót, az egyes fülek betöltése külön
@@ -134,12 +149,11 @@ public class GUI implements ActionListener, WindowListener {
                 run = false;
             }
             if (!thisGame.isGameOver() && this.gameInProgress && !this.paused) {
-                thisGame.doRound();
                 changed = true;
             }
             if (thisGame.isGameOver()) {
                 this.gameInProgress = false;
-                this.paused = true;
+                this.setPaused(true);
             }
             if (settingsTabLoop()) {
                 changed = true;
@@ -150,17 +164,17 @@ public class GUI implements ActionListener, WindowListener {
                 changed = false;
             }
             if (!this.gameTab.isShowing()) {
-                this.paused = true;
+                this.setPaused(true);
             }
             if (this.doReset) {
                 newGameInstance();
                 this.gameInProgress = false;
-                this.paused = true;
+                this.setPaused(true);
                 this.doReset = false;
                 changed = true;
             }
             try {
-                Thread.sleep(this.speedMs);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
             }
         }
@@ -201,7 +215,7 @@ public class GUI implements ActionListener, WindowListener {
 
         this.speed = new JSlider(20, 1000);
         this.speed.setValue(this.defaultSpeed);
-        this.speedMs = this.speed.getValue();
+        this.setSpeedMs(this.speed.getValue());
         this.speed.setBorder(new EmptyBorder(5, 5, 5, 5));
         JPanel speedTexts = new JPanel();
         speedTexts.setLayout(new BoxLayout(speedTexts, BoxLayout.X_AXIS));
@@ -235,7 +249,7 @@ public class GUI implements ActionListener, WindowListener {
             changeHappened = true;
         }
         if (this.speed.getValue() != this.speedMs) {
-            this.speedMs = this.speed.getValue();
+            this.setSpeedMs(this.speed.getValue());
             this.speedLabel.setText(Integer.toString(this.speedMs));
         }
         if (changeHappened) {
@@ -286,33 +300,41 @@ public class GUI implements ActionListener, WindowListener {
 
     /**
      * A játéktábla frissítése az aktuális állás alapján. gameTabEventLoop() hívja
-     * meg.
+     * meg alapesetben, de lehetséges soronkívüli frissítés is.
      */
-    private void refreshGameField() {
-        JPanel currentState = new JPanel();
-        currentState.setLayout(new BoxLayout(currentState, BoxLayout.Y_AXIS));
-        this.field.removeAll();
+    public void refreshGameField() {
+        if (!this.gameTimer.isWorking()) {
+            JPanel currentState = new JPanel();
+            currentState.setLayout(new BoxLayout(currentState, BoxLayout.Y_AXIS));
+            this.field.removeAll();
 
-        this.gameMessage.setText(this.thisGame.getGameOverMessage());
+            this.gameMessage.setText(this.thisGame.getGameOverMessage());
 
-        for (int i = 0; i < this.boardSize; ++i) {
-            JPanel rows = new JPanel();
-            rows.setLayout(new BoxLayout(rows, BoxLayout.X_AXIS));
-            for (int j = 0; j < this.boardSize; ++j) {
-                ImageIcon currentField = null;
-                if (i % 2 == j % 2) {
-                    Game.BoardValue current = this.thisGame.askBoard(i, j);
-                    currentField = this.miniWhites.get(current);
-                } else {
-                    Game.BoardValue current = this.thisGame.askBoard(i, j);
-                    currentField = this.miniBlacks.get(current);
+            for (int i = 0; i < this.boardSize; ++i) {
+                JPanel rows = new JPanel();
+                rows.setLayout(new BoxLayout(rows, BoxLayout.X_AXIS));
+                for (int j = 0; j < this.boardSize; ++j) {
+                    ImageIcon currentField = null;
+                    if (i % 2 == j % 2) {
+                        Game.BoardValue current = this.thisGame.askBoard(i, j);
+                        currentField = this.miniWhites.get(current);
+                    } else {
+                        Game.BoardValue current = this.thisGame.askBoard(i, j);
+                        currentField = this.miniBlacks.get(current);
+                    }
+                    JLabel current = new JLabel(currentField);
+                    rows.add(current);
                 }
-                JLabel current = new JLabel(currentField);
-                rows.add(current);
+                currentState.add(rows);
             }
-            currentState.add(rows);
+            this.field.add(currentState);
+        } else {
+            this.gameTimer.setUpdateNeeded(true);
+            try {
+                this.bq.take().run();
+            } catch (InterruptedException e) {
+            }
         }
-        this.field.add(currentState);
     }
 
     /**
@@ -340,7 +362,7 @@ public class GUI implements ActionListener, WindowListener {
         this.buttons.add(resetButtonPanel);
 
         this.gameInProgress = false;
-        this.paused = true;
+        this.setPaused(true);
         this.doReset = false;
     }
 
@@ -410,7 +432,7 @@ public class GUI implements ActionListener, WindowListener {
             this.boardSetter.setValue(this.boardSize); // különben érzékeli a különbséget maga és az előző változó
                                                        // között és resetel mindent
             newGameInstance(); // hogy átméretezze a tábla elemeit
-            this.thisGame = loaded;
+            this.setThisGame(loaded);
         }
         dialog.setVisible(false);
     }
@@ -453,7 +475,26 @@ public class GUI implements ActionListener, WindowListener {
         this.miniWhites.put(Game.BoardValue.WHITE, new ImageIcon(GUI.originalWhites.get(Game.BoardValue.WHITE)
                 .getImage().getScaledInstance(400 / this.boardSize, 400 / this.boardSize, Image.SCALE_SMOOTH)));
 
-        this.thisGame = new Game(this.pawns, this.boardSize, true);
+        this.setThisGame(new Game(this.pawns, this.boardSize, true));
+    }
+
+    private void setPaused(boolean paused) {
+        this.paused = paused;
+        this.gameTimer.setRun(!paused);
+    }
+
+    private void setThisGame(Game game) {
+        this.thisGame = game;
+        this.gameTimer.setGame(game);
+    }
+
+    private void setSpeedMs(int speed) {
+        this.speedMs = speed;
+        this.gameTimer.setWaitTime(speed);
+    }
+
+    public BlockingQueue<Runnable> getBq() {
+        return this.bq;
     }
 
     /**
@@ -463,15 +504,15 @@ public class GUI implements ActionListener, WindowListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.startButton) {
             if (this.gameInProgress) {
-                this.paused = !this.paused;
+                this.setPaused(!this.paused);
             } else {
                 this.gameInProgress = true;
-                this.paused = false;
+                this.setPaused(false);
             }
         }
         if (e.getSource() == this.reset) {
             this.gameInProgress = false;
-            this.paused = true;
+            this.setPaused(true);
             this.doReset = true;
         }
     }
@@ -481,7 +522,7 @@ public class GUI implements ActionListener, WindowListener {
      */
     @Override
     public void windowClosing(WindowEvent we) {
-        this.paused = true;
+        this.setPaused(true);
         if (this.gameInProgress) {
             saveConfirm();
         }
