@@ -407,7 +407,7 @@ public class GUI implements ActionListener, WindowListener {
     private void initAboutTab() {
         this.aboutTab = new JPanel();
         this.aboutTab.setLayout(new BoxLayout(aboutTab, BoxLayout.Y_AXIS));
-        String aboutText = "Demokratikus sakk v1.0\nKészítette: Gyenes Dávid András\nKészült a BME üzemmérnök-informatikus képzésének Objektumorientált programozás tárgyának\nnagy házi feladataként.\n2022";
+        String aboutText = "Demokratikus sakk v1.1\nKészítette: Gyenes Dávid András\nKészült a BME üzemmérnök-informatikus képzésének Objektumorientált programozás tárgyának\nnagy házi feladataként.\n2023";
         for (String i : aboutText.split("\n")) {
             JPanel currentRow = new JPanel();
             currentRow.setLayout(new BoxLayout(currentRow, BoxLayout.LINE_AXIS));
